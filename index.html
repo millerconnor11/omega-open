@@ -1,0 +1,2078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Omega Open">
+<meta name="theme-color" content="#1A1A1A">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231A1A1A'/><text y='68' x='50' text-anchor='middle' font-size='60'>⛳</text></svg>">
+<meta name="mobile-web-app-capable" content="yes">
+
+<title>Omega Open 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+<style>
+:root{--green:#4CAF7D;--green-light:#1E3A2A;--green-mid:#5DBF8A;--blue:#4A9EDB;--blue-light:#1A2D3F;--amber:#D4A847;--amber-light:#2E2810;--red:#E05C5C;--red-light:#2E1A1A;--gray:#8A8A85;--gray-light:#2A2A2A;--border:rgba(255,255,255,0.08);--border-strong:rgba(255,255,255,0.15);--bg:#1A1A1A;--bg-card:#242424;--bg-secondary:#2E2E2E;--text:#F0F0F0;--text-secondary:#A0A0A0;--text-hint:#666666;--radius:10px;--radius-lg:14px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;-webkit-tap-highlight-color:transparent;}
+button,select,input{touch-action:manipulation;-webkit-tap-highlight-color:transparent;font-family:'DM Sans',sans-serif;}
+.shell{display:flex;flex-direction:column;min-height:100vh;}
+.hdr{padding:0;padding-top:env(safe-area-inset-top);border-bottom:1px solid var(--border);background:var(--bg-card);position:relative;overflow:hidden;min-height:calc(72px + env(safe-area-inset-top));}
+.hdr-title{font-size:12px;font-weight:500;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.08em;font-family:'DM Mono',monospace;}
+.hdr-sub{font-size:19px;font-weight:600;color:var(--text);margin-top:2px;}
+.sync-row{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-hint);margin-top:4px;font-family:'DM Mono',monospace;}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:#ccc;transition:background .3s;}
+.sync-dot.live{background:#2D6A1F;}
+.sync-dot.err{background:#c0392b;}
+.content{flex:1;overflow-y:auto;padding:1rem 1.25rem 7rem;-webkit-overflow-scrolling:touch;padding-left:max(1.25rem,env(safe-area-inset-left));padding-right:max(1.25rem,env(safe-area-inset-right));}
+.page{display:none;}.page.active{display:block;}
+.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--bg-card);border-top:1px solid var(--border);display:flex;z-index:1000;padding-bottom:env(safe-area-inset-bottom);padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 2px 8px;cursor:pointer;color:var(--text-hint);font-size:9px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.04em;gap:3px;border:none;background:none;min-height:56px;}
+.ni.active{color:var(--green-mid);}
+.ni svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
+.card{background:var(--bg-card);border-radius:var(--radius-lg);border:1px solid var(--border);padding:1rem;margin-bottom:.875rem;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+.ctitle{font-size:12px;font-weight:600;color:var(--text);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.05em;font-family:'DM Mono',monospace;}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem;}
+.mtile{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:.875rem;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+.mlabel{font-size:10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.06em;font-family:'DM Mono',monospace;margin-bottom:4px;}
+.mval{font-size:22px;font-weight:600;color:var(--text);}
+.msub{font-size:11px;color:var(--text-hint);margin-top:2px;}
+.tscore{display:flex;align-items:center;justify-content:space-around;padding:1.25rem 0;}
+.tblock{text-align:center;}
+.tname{font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.06em;font-family:'DM Mono',monospace;margin-bottom:4px;}
+.tbig{font-size:48px;font-weight:600;line-height:1;}
+.sg{color:var(--green-mid);}.sb{color:var(--blue);}
+.rrow{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+.rrow:last-child{border-bottom:none;}
+.rinfo{flex:1;}.rname{font-size:13px;font-weight:500;}.rsub{font-size:11px;color:var(--text-secondary);margin-top:1px;}
+.rscores{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.rscore{font-size:17px;font-weight:600;min-width:28px;text-align:center;}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:500;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.04em;}
+.bg{background:var(--green-light);color:var(--green-mid);}
+.bb{background:var(--blue-light);color:var(--blue);}
+.ba{background:var(--amber-light);color:var(--amber);}
+.bgr{background:var(--gray-light);color:var(--gray);}
+.tabrow{display:flex;gap:6px;margin-bottom:1rem;overflow-x:auto;padding-bottom:2px;}
+.tbtn{padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:var(--bg-card);color:var(--text-secondary);cursor:pointer;font-size:11px;font-family:'DM Mono',monospace;white-space:nowrap;transition:all .15s;}
+.tbtn.active{background:var(--text);color:var(--bg);border-color:var(--text);}
+.mc{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:.875rem;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+.mch{display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:8px 1rem;background:var(--bg-secondary);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;}.mch::after{content:"\25BE";font-size:12px;color:var(--text-hint);justify-self:end;transition:transform .2s;}.mc.collapsed .mch::after{transform:rotate(-90deg);}.mcb{overflow:hidden;transition:max-height .25s ease,opacity .25s ease;max-height:2000px;opacity:1;}.mc.collapsed .mcb{max-height:0;opacity:0;pointer-events:none;}
+.mct{font-size:11px;color:var(--text-secondary);font-family:'DM Mono',monospace;}
+.mcs{font-size:12px;font-weight:700;font-family:'DM Mono',monospace;text-transform:uppercase;text-align:right;justify-self:end;}.mct{justify-self:start;}
+.pb{color:var(--green-mid);}
+.pc{color:var(--blue);}
+.pt{color:var(--gray);}
+.mcb{padding:.875rem 1rem;}
+.msides{display:grid;grid-template-columns:1fr 40px 1fr;gap:8px;align-items:center;margin-bottom:.875rem;}
+.msn{font-size:11px;color:var(--text-secondary);font-family:'DM Mono',monospace;margin-bottom:2px;}
+.msp{font-size:13px;font-weight:600;}
+.msbig{font-size:26px;font-weight:600;margin-top:4px;}
+.mssub{font-size:11px;color:var(--text-secondary);}
+.mctr{text-align:center;}
+.mtl{font-size:9px;color:var(--text-hint);font-family:'DM Mono',monospace;text-transform:uppercase;}
+.mtv{font-size:20px;font-weight:600;}
+.prow{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.prow:last-child{border-bottom:none;}
+.dp{color:var(--green-mid);font-weight:600;}.dn{color:var(--red);font-weight:600;}.dz{color:var(--text-hint);font-weight:600;}
+.hrow{display:grid;grid-template-columns:52px repeat(9,1fr) 28px;gap:2px;margin-bottom:3px;font-size:10px;}
+.hhdr{display:grid;grid-template-columns:52px repeat(9,1fr) 28px;gap:2px;margin-bottom:2px;font-size:9px;color:var(--text-hint);font-family:'DM Mono',monospace;text-align:center;}
+.hhdr div:first-child{text-align:left;}
+.hcell{text-align:center;padding:3px 1px;border-radius:4px;font-weight:500;}
+.hname{font-weight:600;font-size:10px;color:var(--text-secondary);align-self:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.he{background:#1E3A2A;color:#5DBF8A;}.hbi{background:#2E1515;color:#E05C5C;}.hp{background:#2E2E2E;color:#A0A0A0;}.hbo{background:#0F2A3F;color:#4A9EDB;}.hd{background:transparent;color:var(--text-secondary);border:1px solid var(--border);}.hem{color:var(--text-hint);}.hbt{background:#2E2A0A;color:#D4C84A;}
+.flabel{font-size:11px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;color:var(--text-secondary);margin-bottom:5px;display:block;}
+.fsel,.finp{width:100%;padding:10px 12px;border:1px solid var(--border-strong);border-radius:var(--radius);background:var(--bg-card);color:var(--text);font-size:16px;appearance:none;-webkit-appearance:none;}
+.hbanner{padding:10px 12px;background:var(--bg-secondary);border-radius:var(--radius);font-size:12px;color:var(--text-secondary);margin-bottom:1rem;display:none;font-family:'DM Mono',monospace;}
+.sgrid{display:grid;grid-template-columns:repeat(9,1fr);gap:5px;margin-bottom:1rem;}
+.scell{text-align:center;}
+.shl{font-size:9px;color:var(--text-hint);font-family:'DM Mono',monospace;margin-bottom:3px;}
+.sinp{width:100%;text-align:center;padding:8px 2px;border:1px solid var(--border-strong);border-radius:6px;font-size:16px;font-weight:500;font-family:'DM Mono',monospace;background:var(--bg-card);color:var(--text);}
+.sinp:focus{outline:none;border-color:var(--green-mid);background:var(--green-light);}
+.sbar{padding:10px 12px;background:var(--bg-secondary);border-radius:var(--radius);font-size:12px;font-family:'DM Mono',monospace;display:none;margin-bottom:1rem;}
+.sfgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:.75rem;}
+.sfp{text-align:center;padding:8px 4px;border-radius:var(--radius);border:1px solid var(--border);}
+.sfpts{font-size:18px;font-weight:600;}
+.sfl{font-size:9px;color:var(--text-secondary);font-family:'DM Mono',monospace;margin-top:2px;}
+.savebtn{width:100%;padding:13px;background:var(--text);color:var(--bg);border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;}
+.pinbtn{padding:14px;background:var(--bg-card);border:1px solid var(--border-strong);border-radius:var(--radius);color:var(--text);font-size:20px;font-weight:600;font-family:'DM Mono',monospace;cursor:pointer;transition:background .1s;}
+.pinbtn:active{background:var(--bg-secondary);}
+.savebtn:active{opacity:.8;}
+.plrow{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+.plrow:last-child{border-bottom:none;}
+.av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;margin-right:10px;font-family:'DM Mono',monospace;}
+.avg{background:var(--green-light);color:var(--green-mid);}
+.avb{background:var(--blue-light);color:var(--blue);}
+.pleft{display:flex;align-items:center;}
+.pname{font-size:14px;font-weight:500;}
+.phcp{font-size:11px;color:var(--text-secondary);font-family:'DM Mono',monospace;margin-top:1px;}
+.schd{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:.875rem;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+.scdh{padding:10px 1rem;background:var(--bg-secondary);border-bottom:1px solid var(--border);}
+.scdt{font-size:13px;font-weight:600;}
+.scds{font-size:11px;color:var(--text-secondary);font-family:'DM Mono',monospace;margin-top:2px;}
+.stbl{width:100%;border-collapse:collapse;font-size:12px;}
+.stbl th{text-align:left;color:var(--text-secondary);font-weight:500;padding:7px 1rem;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;}
+.stbl td{padding:8px 1rem;border-bottom:1px solid var(--border);}
+.stbl tr:last-child td{border-bottom:none;}
+.pgbox{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;}
+.pghdr{background:var(--bg-secondary);padding:7px 12px;font-size:11px;font-family:'DM Mono',monospace;color:var(--text-secondary);border-bottom:1px solid var(--border);}
+.pgbody{padding:12px;}
+.p2col{display:grid;grid-template-columns:1fr 28px 1fr;gap:8px;align-items:start;}
+.pclabel{font-size:10px;font-family:'DM Mono',monospace;font-weight:600;text-transform:uppercase;margin-bottom:5px;}
+.psels{display:flex;flex-direction:column;gap:6px;}
+.psels select{font-size:16px;padding:7px 8px;border:1px solid var(--border-strong);border-radius:6px;background:var(--bg-card);color:var(--text);width:100%;appearance:none;}
+.pvctr{display:flex;align-items:center;justify-content:center;padding-top:20px;font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;}
+.smbox{margin-bottom:8px;}
+.smlabel{font-size:9px;font-family:'DM Mono',monospace;text-transform:uppercase;color:var(--text-hint);margin-bottom:4px;letter-spacing:.04em;}
+.smsel{display:grid;grid-template-columns:1fr 24px 1fr;gap:6px;align-items:center;}
+.smsel select{font-size:16px;padding:7px 6px;border:1px solid var(--border-strong);border-radius:6px;background:var(--bg-card);color:var(--text);width:100%;appearance:none;}
+.smdiv{border:none;border-top:1px dashed var(--border);margin:8px 0;}
+.herow{display:grid;grid-template-columns:1fr 80px 30px;gap:8px;align-items:center;margin-bottom:8px;}
+.hename{font-size:13px;font-weight:500;}
+.heinp{padding:7px 8px;border:1px solid var(--border-strong);border-radius:6px;background:var(--bg-card);color:var(--text);font-size:13px;font-family:'DM Mono',monospace;text-align:center;width:100%;}
+.heunit{font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;}
+.lockscr{text-align:center;padding:2.5rem 1rem;}
+.lockicon{font-size:40px;margin-bottom:1rem;}
+.locktitle{font-size:16px;font-weight:600;margin-bottom:6px;}
+.locksub{font-size:13px;color:var(--text-secondary);margin-bottom:1.5rem;}
+.pwinp{width:100%;padding:12px;border:1px solid var(--border-strong);border-radius:var(--radius);font-size:16px;text-align:center;letter-spacing:.1em;background:var(--bg-card);color:var(--text);margin-bottom:10px;font-family:'DM Mono',monospace;}
+.pwinp:focus{outline:none;border-color:var(--green-mid);}
+.pwerr{color:var(--red);font-size:12px;margin-top:6px;display:none;font-family:'DM Mono',monospace;}
+.sdiv{border:none;border-top:1px solid var(--border);margin:1.25rem 0;}
+.svrnd{width:100%;padding:10px;border:1px solid var(--border-strong);border-radius:var(--radius);background:var(--bg-secondary);color:var(--text);font-size:13px;font-weight:500;cursor:pointer;margin-top:8px;}
+.flash{color:var(--green-mid);font-size:12px;font-family:'DM Mono',monospace;text-align:center;margin-top:6px;display:none;}
+.tbd{font-size:12px;color:var(--text-hint);font-style:italic;padding:8px 1rem;font-family:'DM Mono',monospace;}
+.astitle{font-size:11px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--text-secondary);margin-bottom:.75rem;}@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="hdr" style="display:flex;align-items:center;justify-content:center;position:relative;">
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.75rem 1rem;z-index:2;text-align:center;">
+      <div style="font-size:15px;font-weight:600;color:var(--text);letter-spacing:.02em;margin-bottom:3px;">Omega Open Classic Invitational</div>
+      <div class="hdr-title" style="color:var(--text-secondary);">June 12–14, 2026</div>
+      <div class="sync-row" style="margin-top:4px;justify-content:center;"><div class="sync-dot" id="sdot"></div><span id="slabel" style="color:var(--text-hint);">Connecting...</span></div>
+    </div>
+    <button id="btn-refresh" onclick="manualRefresh()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;padding:8px;cursor:pointer;color:var(--text-secondary);z-index:3;" aria-label="Refresh"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
+    <div style="display:none;">
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div class="page active" id="page-dashboard">
+      <div class="mtile" id="countdown-tile" style="margin-bottom:10px;padding:1rem 1.25rem;">
+        <div class="mlabel" style="margin-bottom:.5rem;">⛳ Days to get Better</div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;" id="countdown-grid">
+          <div style="text-align:center;"><div class="mval" id="cd-months" style="font-size:20px;">–</div><div class="msub">Months</div></div>
+          <div style="text-align:center;"><div class="mval" id="cd-days" style="font-size:20px;">–</div><div class="msub">Days</div></div>
+          <div style="text-align:center;"><div class="mval" id="cd-hours" style="font-size:20px;">–</div><div class="msub">Hours</div></div>
+          <div style="text-align:center;"><div class="mval" id="cd-mins" style="font-size:20px;">–</div><div class="msub">Mins</div></div>
+          <div style="text-align:center;"><div class="mval" id="cd-secs" style="font-size:20px;">–</div><div class="msub">Secs</div></div>
+        </div>
+        <div id="cd-done" style="display:none;text-align:center;font-size:16px;font-weight:600;color:var(--green-mid);padding:.5rem 0;">🏌️ It's time! Let's golf!</div>
+      </div>
+      <div class="mtile" id="champion-tile" style="margin-bottom:10px;padding:1rem 1.25rem;text-align:center;display:none;">
+        <div style="font-size:20px;margin-bottom:4px;">👑🏆👑</div>
+        <div class="mlabel" style="margin-bottom:6px;letter-spacing:.12em;">Champion</div>
+        <div id="champion-name" style="font-size:22px;font-weight:600;color:var(--amber);margin-bottom:4px;">–</div>
+        <div id="champion-score" style="font-size:12px;font-family:'DM Mono',monospace;color:var(--text-hint);margin-bottom:6px;"></div>
+        <div style="font-size:16px;">🎉⛳🎉</div>
+      </div>
+      <div class="mgrid" id="dash-tiles">
+        <div class="mtile"><div class="mlabel">Leader</div><div class="mval" id="dash-leader" style="font-size:16px;">–</div><div class="msub" id="dash-leader-sub">Loading...</div></div>
+        <div class="mtile"><div class="mlabel">Rounds Done</div><div class="mval" id="dash-rounds-done">0<span style="font-size:14px;color:var(--text-secondary);">/4</span></div><div class="msub" id="dash-rounds-sub">R1 up next</div></div>
+        <div class="mtile" id="mvp-tile" style="text-align:center;"><div class="mlabel" style="margin-bottom:4px;">🌟 MVP</div><div id="mvp-name" style="font-size:15px;font-weight:600;color:var(--amber);">–</div><div id="mvp-sub" style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;margin-top:3px;line-height:1.4;"></div></div>
+        <div class="mtile" id="bust-tile" style="text-align:center;"><div class="mlabel" style="margin-bottom:4px;">🤡 Biggest Bust</div><div id="bust-name" style="font-size:15px;font-weight:600;color:var(--red);margin-top:2px;">–</div><div id="bust-sub" style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;margin-top:3px;line-height:1.4;"></div></div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem;"><div class="ctitle" style="margin:0;">Official Standings</div><span class="badge bgr" id="official-badge">No signed rounds</span></div>
+        <div class="tscore">
+          <div class="tblock"><div class="tname">The Beets</div><div class="tbig sg" id="dash-beets-official">–</div><div style="font-size:10px;color:var(--text-hint);margin-top:2px;font-family:'DM Mono',monospace;">pts</div><div style="font-size:11px;font-weight:600;color:var(--text);margin-top:6px;font-family:'DM Sans',sans-serif;line-height:1.4;" id="off-beets-sub"></div></div>
+          <div style="font-size:14px;color:var(--text-hint);font-family:'DM Mono',monospace;">vs</div>
+          <div class="tblock"><div class="tname">The Commons</div><div class="tbig sb" id="dash-commons-official">–</div><div style="font-size:10px;color:var(--text-hint);margin-top:2px;font-family:'DM Mono',monospace;">pts</div><div style="font-size:11px;font-weight:600;color:var(--text);margin-top:6px;font-family:'DM Sans',sans-serif;line-height:1.4;" id="off-commons-sub"></div></div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:.875rem;" id="dash-official-rows"></div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem;"><div class="ctitle" style="margin:0;">Live Standings</div><span class="badge ba">Live</span></div>
+        <div class="tscore">
+          <div class="tblock"><div class="tname">The Beets</div><div class="tbig sg" id="dash-beets-pts">0</div><div style="font-size:10px;color:var(--text-hint);margin-top:2px;font-family:'DM Mono',monospace;">pts</div><div style="font-size:11px;font-weight:600;color:var(--text);margin-top:6px;font-family:'DM Sans',sans-serif;line-height:1.4;" id="live-beets-sub"></div></div>
+          <div style="font-size:14px;color:var(--text-hint);font-family:'DM Mono',monospace;">vs</div>
+          <div class="tblock"><div class="tname">The Commons</div><div class="tbig sb" id="dash-commons-pts">0</div><div style="font-size:10px;color:var(--text-hint);margin-top:2px;font-family:'DM Mono',monospace;">pts</div><div style="font-size:11px;font-weight:600;color:var(--text);margin-top:6px;font-family:'DM Sans',sans-serif;line-height:1.4;" id="live-commons-sub"></div></div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:.875rem;" id="dash-round-rows"></div>
+      </div>
+    </div>
+
+    <div class="page" id="page-matches">
+      <div style="margin-bottom:.625rem;">
+        <div class="tabrow" id="match-tabrow" style="margin-bottom:.625rem;"></div>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:6px 10px;display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;max-width:50%;">
+          <div style="font-size:8px;font-family:'DM Mono',monospace;color:var(--text-hint);text-transform:uppercase;letter-spacing:.05em;flex-shrink:0;">Key</div>
+          <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:3px;"><div style="width:12px;height:12px;border-radius:2px;background:#D4C84A;flex-shrink:0;"></div><span style="font-size:9px;font-family:'DM Mono',monospace;color:var(--text);font-weight:700;">Albtr</span></div>
+            <div style="display:flex;align-items:center;gap:3px;"><div style="width:12px;height:12px;border-radius:2px;background:#5DBF8A;flex-shrink:0;"></div><span style="font-size:9px;font-family:'DM Mono',monospace;color:var(--text);font-weight:700;">Eagle</span></div>
+            <div style="display:flex;align-items:center;gap:3px;"><div style="width:12px;height:12px;border-radius:2px;background:#E05C5C;flex-shrink:0;"></div><span style="font-size:9px;font-family:'DM Mono',monospace;color:var(--text);font-weight:700;">Birdie</span></div>
+            <div style="display:flex;align-items:center;gap:3px;"><div style="width:12px;height:12px;border-radius:2px;background:#8A8A85;flex-shrink:0;"></div><span style="font-size:9px;font-family:'DM Mono',monospace;color:var(--text);font-weight:700;">Par</span></div>
+            <div style="display:flex;align-items:center;gap:3px;"><div style="width:12px;height:12px;border-radius:2px;background:#4A9EDB;flex-shrink:0;"></div><span style="font-size:9px;font-family:'DM Mono',monospace;color:var(--text);font-weight:700;">Bogey</span></div>
+            <div style="display:flex;align-items:center;gap:3px;"><div style="width:12px;height:12px;border-radius:2px;border:1px solid var(--border-strong);background:transparent;flex-shrink:0;"></div><span style="font-size:9px;font-family:'DM Mono',monospace;color:var(--text);font-weight:700;">Dbl+</span></div>
+          </div>
+        </div>
+      </div>
+      <div id="mcontent"></div>
+    </div>
+
+    <div class="page" id="page-scores">
+      <div id="scores-lock" style="display:none;">
+        <div class="card lockscr">
+          <div class="lockicon">⛳</div>
+          <div class="locktitle">Score Entry</div>
+          <div class="locksub">Enter the 4-digit PIN to submit scores.</div>
+          <div style="display:flex;gap:6px;justify-content:center;margin-bottom:1rem;" id="pin-dots">
+            <div id="pd0" style="width:14px;height:14px;border-radius:50%;border:2px solid var(--border-strong);background:transparent;transition:background .15s;"></div>
+            <div id="pd1" style="width:14px;height:14px;border-radius:50%;border:2px solid var(--border-strong);background:transparent;transition:background .15s;"></div>
+            <div id="pd2" style="width:14px;height:14px;border-radius:50%;border:2px solid var(--border-strong);background:transparent;transition:background .15s;"></div>
+            <div id="pd3" style="width:14px;height:14px;border-radius:50%;border:2px solid var(--border-strong);background:transparent;transition:background .15s;"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:220px;margin:0 auto 1rem;">
+            <button class="pinbtn" onclick="pinPress('1')">1</button>
+            <button class="pinbtn" onclick="pinPress('2')">2</button>
+            <button class="pinbtn" onclick="pinPress('3')">3</button>
+            <button class="pinbtn" onclick="pinPress('4')">4</button>
+            <button class="pinbtn" onclick="pinPress('5')">5</button>
+            <button class="pinbtn" onclick="pinPress('6')">6</button>
+            <button class="pinbtn" onclick="pinPress('7')">7</button>
+            <button class="pinbtn" onclick="pinPress('8')">8</button>
+            <button class="pinbtn" onclick="pinPress('9')">9</button>
+            <button class="pinbtn" onclick="pinClear()" style="font-size:11px;color:var(--text-secondary);">CLR</button>
+            <button class="pinbtn" onclick="pinPress('0')">0</button>
+            <button class="pinbtn" onclick="pinBack()" style="font-size:16px;">⌫</button>
+          </div>
+          <div id="pin-err" style="display:none;font-size:12px;font-family:'DM Mono',monospace;color:var(--red);margin-bottom:.5rem;">Incorrect PIN. Try again.</div>
+        </div>
+      </div>
+      <div id="scores-content" style="display:none;">
+      <div class="card">
+        <div class="ctitle">Score Entry</div>
+        <div style="margin-bottom:1rem;"><label class="flabel">Round</label><select class="fsel" id="entry-round"><option value="1">R1 · Fri · Swampfire (Stableford)</option><option value="2">R2 · Sat AM · Monarch (Best Ball)</option><option value="3">R3 · Sat PM · Reflections (Scramble)</option><option value="4">R4 · Sun · Fountains (Singles)</option></select></div>
+        <div style="margin-bottom:1rem;"><label class="flabel">Player</label><select class="fsel" id="entry-player"><option value="">Select player...</option></select></div>
+        <div class="hbanner" id="hbanner"></div>
+      </div>
+      <div class="card">
+        <div class="ctitle" style="margin-bottom:.5rem;">Front 9</div>
+        <div class="sgrid" id="front9"></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:.75rem;margin-top:-.25rem;">
+          <div style="background:var(--bg-secondary);border:1px solid var(--border-strong);border-radius:var(--radius);padding:8px 16px;text-align:center;min-width:90px;">
+            <div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Front 9</div>
+            <div style="font-size:18px;font-weight:600;color:var(--text);" id="front9-strokes">–</div>
+            <div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;">strokes</div>
+          </div>
+          <div style="background:var(--bg-secondary);border:1px solid var(--border-strong);border-radius:var(--radius);padding:8px 16px;text-align:center;min-width:90px;">
+            <div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Front 9</div>
+            <div style="font-size:18px;font-weight:600;color:var(--green-mid);" id="front9-pts">–</div>
+            <div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;">pts</div>
+          </div>
+        </div>
+        <div class="ctitle" style="margin-bottom:.5rem;margin-top:.5rem;">Back 9</div>
+        <div class="sgrid" id="back9"></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:.75rem;margin-top:-.25rem;">
+          <div style="background:var(--bg-secondary);border:1px solid var(--border-strong);border-radius:var(--radius);padding:8px 16px;text-align:center;min-width:90px;">
+            <div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Back 9</div>
+            <div style="font-size:18px;font-weight:600;color:var(--text);" id="back9-strokes">–</div>
+            <div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;">strokes</div>
+          </div>
+          <div style="background:var(--bg-secondary);border:1px solid var(--border-strong);border-radius:var(--radius);padding:8px 16px;text-align:center;min-width:90px;">
+            <div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Back 9</div>
+            <div style="font-size:18px;font-weight:600;color:var(--green-mid);" id="back9-pts">–</div>
+            <div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;">pts</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:.75rem;">
+          <div style="background:var(--bg-secondary);border:1px solid var(--border-strong);border-radius:var(--radius);padding:12px;text-align:center;flex:1;">
+            <div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Total Strokes</div>
+            <div style="font-size:28px;font-weight:600;color:var(--text);" id="total-strokes">–</div>
+            <div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;">strokes</div>
+          </div>
+          <div style="background:var(--bg-secondary);border:1px solid var(--border-strong);border-radius:var(--radius);padding:12px;text-align:center;flex:1;">
+            <div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Total Points</div>
+            <div style="font-size:28px;font-weight:600;color:var(--green-mid);" id="total-pts">–</div>
+            <div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;">pts</div>
+          </div>
+        </div>
+        <div class="sbar" id="sbar"></div>
+        <div id="sfref" style="margin-bottom:1rem;">
+          <div class="astitle" style="margin-bottom:.5rem;">Points Reference</div>
+          <div class="sfgrid">
+            <div class="sfp"><div class="sfpts" style="color:var(--red);">0</div><div class="sfl">Double+</div></div>
+            <div class="sfp"><div class="sfpts" style="color:var(--amber);">1</div><div class="sfl">Bogey</div></div>
+            <div class="sfp"><div class="sfpts" style="color:var(--gray);">2</div><div class="sfl">Par</div></div>
+            <div class="sfp"><div class="sfpts" style="color:var(--blue);">4</div><div class="sfl">Birdie</div></div>
+            <div class="sfp"><div class="sfpts" style="color:var(--green-mid);">6</div><div class="sfl">Eagle</div></div>
+          </div>
+        </div>
+        <button class="savebtn" id="btn-save">Save Scorecard</button>
+      </div>
+      </div><!-- /scores-content -->
+    </div>
+
+    <div class="page" id="page-players">
+      <div class="card" style="margin-bottom:.875rem;"><div class="ctitle" style="color:var(--green-mid);">The Beets</div><div id="blist"></div></div>
+      <div class="card"><div class="ctitle" style="color:var(--blue);">The Commons</div><div id="clist"></div></div>
+      <div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;margin-top:.5rem;">Course hcp = (Hcp × Slope / 113) + (Rating − Par)</div>
+    </div>
+
+    <div class="page" id="page-schedule">
+      <div class="schd"><div class="scdh"><div class="scdt">Friday, June 12 · Swampfire</div><div class="scds">White · 6,146 yds · 69.8/127 · Par 72 · Two-Man Stableford</div></div><div id="sched1"><div class="tbd">Pairings TBD</div></div></div>
+      <div class="schd"><div class="scdh"><div class="scdt">Saturday AM · Monarch</div><div class="scds">White · 6,272 yds · 71.2/134 · Par 72 · Best Ball Match Play</div></div><div id="sched2"><div class="tbd">Pairings TBD</div></div></div>
+      <div class="schd"><div class="scdh"><div class="scdt">Saturday PM · Reflections</div><div class="scds">Blue · 6,373 yds · 70.9/134 · No strokes · Scramble</div></div><div id="sched3"><div class="tbd">Pairings TBD</div></div></div>
+      <div class="schd"><div class="scdh"><div class="scdt">Sunday · Fountains</div><div class="scds">White · 5,836 yds · 69.3/127 · Par 72 · Singles Match Play</div></div><div id="sched4"><div class="tbd">Pairings TBD</div></div></div>
+    </div>
+
+    <div class="page" id="page-admin">
+      <div id="adminlock">
+        <div class="card lockscr">
+          <div class="lockicon">🔒</div>
+          <div class="locktitle">Admin Access</div>
+          <div class="locksub">Enter the password to manage pairings and handicaps.</div>
+          <input type="password" class="pwinp" id="adminpw" placeholder="••••••••••">
+          <button class="savebtn" id="btn-unlock">Unlock</button>
+          <div class="pwerr" id="pwerr">Incorrect password.</div>
+        </div>
+      </div>
+      <div id="adminpanel" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;"><div style="font-size:14px;font-weight:600;">Admin Panel</div><button id="btn-lock" style="font-size:12px;color:var(--text-secondary);background:none;border:1px solid var(--border);border-radius:20px;padding:4px 12px;cursor:pointer;font-family:'DM Mono',monospace;">Lock</button></div>
+        <div class="card"><div class="ctitle">R1 Pairings · Swampfire</div><div class="astitle">2 Beets vs 2 Commons per group</div><div id="r1ed"></div><div style="display:flex;gap:8px;margin-top:0;"><button class="svrnd" id="btn-r1">Save R1 Pairings</button><button class="svrnd" id="btn-clrpair1" style="background:var(--red-light);color:var(--red);border-color:var(--red);">Clear Pairings</button></div><div class="flash" id="r1flash">✓ Saved!</div><div class="flash" id="r1clrflash" style="color:var(--amber);">✓ Pairings cleared.</div></div>
+        <div class="card"><div class="ctitle">R2 Pairings · Monarch</div><div class="astitle">2 Beets vs 2 Commons per group</div><div id="r2ed"></div><div style="display:flex;gap:8px;margin-top:0;"><button class="svrnd" id="btn-r2">Save R2 Pairings</button><button class="svrnd" id="btn-clrpair2" style="background:var(--red-light);color:var(--red);border-color:var(--red);">Clear Pairings</button></div><div class="flash" id="r2flash">✓ Saved!</div><div class="flash" id="r2clrflash" style="color:var(--amber);">✓ Pairings cleared.</div></div>
+        <div class="card"><div class="ctitle">R3 Pairings · Reflections</div><div class="astitle">2 Beets vs 2 Commons per group</div><div id="r3ed"></div><div style="display:flex;gap:8px;margin-top:0;"><button class="svrnd" id="btn-r3">Save R3 Pairings</button><button class="svrnd" id="btn-clrpair3" style="background:var(--red-light);color:var(--red);border-color:var(--red);">Clear Pairings</button></div><div class="flash" id="r3flash">✓ Saved!</div><div class="flash" id="r3clrflash" style="color:var(--amber);">✓ Pairings cleared.</div></div>
+        <div class="card"><div class="ctitle">R4 Pairings · Fountains</div><div class="astitle">8 singles · 2 per tee time</div><div id="r4ed"></div><div style="display:flex;gap:8px;margin-top:0;"><button class="svrnd" id="btn-r4">Save R4 Pairings</button><button class="svrnd" id="btn-clrpair4" style="background:var(--red-light);color:var(--red);border-color:var(--red);">Clear Pairings</button></div><div class="flash" id="r4flash">✓ Saved!</div><div class="flash" id="r4clrflash" style="color:var(--amber);">✓ Pairings cleared.</div></div>
+        <div class="card"><div class="ctitle">Handicaps</div><div class="astitle" style="color:var(--green-mid);">The Beets</div><div id="hebeets"></div><div class="sdiv"></div><div class="astitle" style="color:var(--blue);">The Commons</div><div id="hecommons"></div><button class="svrnd" id="btn-hcp" style="margin-top:12px;">Save Handicaps</button><div class="flash" id="hcpflash">✓ Saved!</div></div>
+        <div class="card"><div class="ctitle">Clear Scores</div><div class="astitle" style="margin-bottom:.875rem;">Remove a player's scorecard for a specific round.</div><div style="margin-bottom:.75rem;"><label class="flabel">Round</label><select class="fsel" id="clear-round"><option value="1">R1 · Fri · Swampfire (Stableford)</option><option value="2">R2 · Sat AM · Monarch (Best Ball)</option><option value="3">R3 · Sat PM · Reflections (Scramble)</option><option value="4">R4 · Sun · Fountains (Singles)</option></select></div><div style="margin-bottom:1rem;"><label class="flabel">Player</label><select class="fsel" id="clear-player"><option value="">Select player...</option></select></div><div style="display:flex;gap:8px;"><button class="svrnd" id="btn-clear-scores" style="background:var(--red-light);color:var(--red);border-color:var(--red);font-weight:600;">Clear Scores</button><button class="svrnd" id="btn-clear-all" style="background:var(--red-light);color:var(--red);border-color:var(--red);font-weight:600;">Clear All</button></div><div style="margin-top:8px;"><button class="svrnd" id="btn-clear-everything" style="width:100%;background:var(--red-light);color:var(--red);border-color:var(--red);font-weight:600;">⚠️ Clear All Rounds</button></div><div id="clear-confirm" style="display:none;margin-top:10px;padding:12px;background:var(--red-light);border:1px solid var(--red);border-radius:var(--radius);"><div style="font-size:12px;font-family:'DM Mono',monospace;color:var(--red);margin-bottom:10px;" id="clear-confirm-msg"></div><div style="display:flex;gap:8px;"><button id="btn-clear-yes" style="flex:1;padding:9px;background:var(--red);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;">Yes, Clear It</button><button id="btn-clear-no" style="flex:1;padding:9px;background:var(--bg-card);color:var(--text);border:1px solid var(--border-strong);border-radius:var(--radius);font-size:13px;cursor:pointer;">Cancel</button></div></div><div class="flash" id="clearflash" style="color:var(--red);">✓ Scores cleared.</div></div>
+        <div class="card"><div class="ctitle">Sign Scorecard</div><div class="astitle" style="margin-bottom:.875rem;">Lock a round to prevent further score changes.</div><div style="margin-bottom:1rem;"><label class="flabel">Round</label><select class="fsel" id="sign-round"><option value="1">R1 · Fri · Swampfire (Stableford)</option><option value="2">R2 · Sat AM · Monarch (Best Ball)</option><option value="3">R3 · Sat PM · Reflections (Scramble)</option><option value="4">R4 · Sun · Fountains (Singles)</option></select></div><div id="sign-status" style="font-size:12px;font-family:'DM Mono',monospace;color:var(--text-hint);margin-bottom:.75rem;"></div><div style="display:flex;gap:8px;"><button class="svrnd" id="btn-sign" style="background:var(--green-light);color:var(--green-mid);border-color:var(--green-mid);font-weight:600;">🔒 Sign Scorecard</button><button class="svrnd" id="btn-open-round" style="font-weight:600;">Open Round</button></div><div id="sign-confirm" style="display:none;margin-top:10px;padding:12px;background:var(--green-light);border:1px solid var(--green-mid);border-radius:var(--radius);"><div style="font-size:12px;font-family:'DM Mono',monospace;color:var(--green-mid);margin-bottom:10px;" id="sign-confirm-msg"></div><div style="display:flex;gap:8px;"><button id="btn-sign-yes" style="flex:1;padding:9px;background:var(--green-mid);color:var(--bg);border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;">Yes, Sign It</button><button id="btn-sign-cancel" style="flex:1;padding:9px;background:var(--bg-card);color:var(--text);border:1px solid var(--border-strong);border-radius:var(--radius);font-size:13px;cursor:pointer;">Cancel</button></div></div><div class="flash" id="signflash"></div></div>
+        <div class="card"><div class="ctitle">Score Entry PIN</div><div class="astitle" style="margin-bottom:.875rem;">Set the 4-digit PIN required to access score entry. Leave blank to disable PIN.</div><div style="margin-bottom:1rem;"><label class="flabel">New PIN (4 digits)</label><input class="finp" type="number" id="pin-input" placeholder="e.g. 1234" min="0" max="9999" inputmode="numeric" style="letter-spacing:.2em;font-family:'DM Mono',monospace;font-size:18px;text-align:center;"></div><div style="display:flex;gap:8px;"><button class="svrnd" id="btn-save-pin" style="background:var(--green-light);color:var(--green-mid);border-color:var(--green-mid);font-weight:600;">Save PIN</button><button class="svrnd" id="btn-clear-pin" style="background:var(--red-light);color:var(--red);border-color:var(--red);font-weight:600;">Remove PIN</button></div><div class="flash" id="pinflash">✓ PIN updated!</div><div id="pin-current" style="font-size:11px;font-family:'DM Mono',monospace;color:var(--text-hint);margin-top:8px;"></div></div>
+        <div class="card"><div class="ctitle">Dev Tools</div><div class="astitle" style="margin-bottom:.875rem;">Testing utilities — remove before tournament.</div><div style="margin-bottom:.75rem;"><label class="flabel">Round</label><select class="fsel" id="seed-round"><option value="1">R1 · Fri · Swampfire (Stableford)</option><option value="2">R2 · Sat AM · Monarch (Best Ball)</option><option value="3">R3 · Sat PM · Reflections (Scramble)</option><option value="4">R4 · Sun · Fountains (Singles)</option></select></div><div style="display:flex;gap:8px;"><button class="svrnd" id="btn-seed-round" style="font-weight:600;">🎲 Seed Round</button><button class="svrnd" id="btn-seed-all" style="font-weight:600;">🎲 Seed All</button></div><div class="flash" id="seedflash">✓ Scores seeded!</div></div>
+        <div class="card"><div class="ctitle">Countdown Date</div><div class="astitle" style="margin-bottom:.875rem;">Set the tee time to count down to on the Dashboard.</div><div style="margin-bottom:.75rem;"><label class="flabel">Date</label><input type="date" class="fsel" id="cd-date-input" value="2026-06-12"></div><div style="margin-bottom:1rem;"><label class="flabel">Time</label><input type="time" class="fsel" id="cd-time-input" value="13:00"></div><button class="svrnd" id="btn-save-cd">Save Countdown</button><div class="flash" id="cdflash">✓ Countdown updated!</div></div>
+        <div class="card"><div class="ctitle">Courses</div><div style="font-size:12px;font-family:'DM Mono',monospace;line-height:2;color:var(--text-secondary);">R1 Swampfire · 69.8/127/Par 72<br>R2 Monarch · 71.2/134/Par 72<br>R3 Reflections · No strokes<br>R4 Fountains · 69.3/127/Par 72</div></div>
+      </div>
+    </div>
+
+  <div class="page" id="page-rules">
+      <div style="margin-bottom:1rem;">
+        <div style="font-size:11px;font-family:'DM Mono',monospace;color:var(--text-hint);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Omega Open 2026</div>
+        <div style="font-size:18px;font-weight:600;color:var(--text);">Official Rules</div>
+      </div>
+
+      <div class="card">
+        <div class="ctitle">📍 Drops</div>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;">All drops will be played laterally — drop your ball on whatever line it went into the hazard, no closer to the hole.</p>
+      </div>
+
+      <div class="card">
+        <div class="ctitle">⛳ Gimmes</div>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;">Any putt within a normal putter length is a gimme. <span style="color:var(--red);font-weight:600;">No giraffe putter.</span></p>
+      </div>
+
+      <div class="card">
+        <div class="ctitle">🌿 Gallery Drops</div>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;">Gallery drops can be taken anywhere that is not out of bounds or a hazard area that is waist height and lower. <strong style="color:var(--red);">Gallery drop must be taken in fescue area.</strong></p>
+        <div style="margin-top:.75rem;display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;background:var(--bg-secondary);border-radius:var(--radius);font-size:12px;color:var(--text-secondary);">
+            <span style="flex-shrink:0;">🌾</span><span>Ball in heather (waist down) — free gallery drop, no penalty.</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;background:var(--bg-secondary);border-radius:var(--radius);font-size:12px;color:var(--text-secondary);">
+            <span style="flex-shrink:0;">💧</span><span>Ball in water — drop and <span style="color:var(--red);font-weight:600;">+1 stroke penalty.</span></span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;background:var(--bg-secondary);border-radius:var(--radius);font-size:12px;color:var(--text-secondary);">
+            <span style="flex-shrink:0;">🌲</span><span>Ball lost in woods — drop and <span style="color:var(--red);font-weight:600;">+1 stroke penalty.</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ctitle">🔍 Lost Ball</div>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;">If you hit your ball in the general direction of water, OB, or the woods and cannot find it, you must assume it went in and take a drop with a <span style="color:var(--red);font-weight:600;">+1 stroke penalty.</span></p>
+      </div>
+
+      <div class="card">
+        <div class="ctitle">✋ Lift, Clean & Place</div>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;">Lift, clean and place is in effect in all areas <span style="font-weight:600;">outside of bunkers.</span> If the bunkers are rough, lift, rake, and place.</p>
+      </div>
+
+      <div class="card" style="border-color:var(--amber);background:var(--amber-light);">
+        <div class="ctitle" style="color:var(--amber);">⚡ R1 Stableford — Max Score</div>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;">Double bogey is the maximum score on any hole. Wherever you are on the hole when you reach double bogey, <span style="font-weight:600;">pick up to keep pace of play.</span></p>
+      </div>
+    </div>
+
+  </div>
+
+  <nav class="bnav">
+    <button class="ni active" id="nav-dash"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dash</button>
+    <button class="ni" id="nav-rules"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Rules</button>
+    <button class="ni" id="nav-matches"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Matches</button>
+    <button class="ni" id="nav-scores"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Scores</button>
+    <button class="ni" id="nav-players"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Players</button>
+    <button class="ni" id="nav-schedule"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Schedule</button>
+    <button class="ni" id="nav-admin"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Admin</button>
+  </nav>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://ckuefmeolcttqzqprmuv.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_57ZztYVTfE9-e0fnSWaomg_482YUUTa';
+
+const COURSES=[{name:'Swampfire',rating:69.8,slope:127,par:72},{name:'Monarch',rating:71.2,slope:134,par:72},{name:'Reflections',rating:70.9,slope:134,par:72,noStrokes:true},{name:'Fountains',rating:69.3,slope:127,par:72}];
+const BEETS=['Ben','Joel','Mack','Paul B.','Andreas','Paul M.','Eric','Malone'];
+const COMMONS=['Common','Verm','Schink','Zack','Shuff','Jake M.','Dom','Noah'];
+let HCP={Ben:8,Joel:7.8,Mack:7,'Paul B.':15,Andreas:16.5,'Paul M.':23.2,Eric:23.4,Malone:18.8,Common:12,Verm:12,Schink:13,Zack:20,Shuff:9.2,'Jake M.':19,Dom:32.2,Noah:22};
+const R1=[];// R1 pairings set via Admin tab
+let PAR=[4,3,5,4,4,3,5,4,4,4,3,5,4,4,3,5,4,4];
+// Stroke index per hole (1=hardest, 18=easiest) for each course
+const SI={
+  2:[1,3,11,17,9,13,5,15,7,12,4,14,2,16,18,10,6,8],   // Monarch R2
+  4:[6,4,12,2,16,14,10,8,18,15,7,17,5,3,11,9,1,13]    // Fountains R4
+};
+let LOCKED_ROUNDS={1:false,2:false,3:false,4:false};
+let HCP_HISTORY={};// {player:{round:hcp}} — handicap locked at time of signing
+let PAIRINGS={1:[],2:[],3:[],4:[]};
+let SCORES={};
+const TTIMES={1:['3:00 PM','3:10 PM','3:20 PM','3:30 PM'],2:['8:40 AM','8:50 AM','9:00 AM','9:10 AM'],3:['2:40 PM','2:50 PM','3:00 PM','3:10 PM'],4:['8:30 AM','8:40 AM','8:50 AM','9:00 AM']};
+const PW='RedWings1';
+let SCORES_PIN='';// 4-digit PIN to access score entry
+let SCORES_UNLOCKED=false;
+let curMatchRound=1;
+let sb=null;
+
+// Supabase
+// Auto-reconnect when app comes back to foreground
+document.addEventListener('visibilitychange', function(){
+  if(document.visibilityState === 'visible'){
+    if(sb){
+      loadAll();
+      // Resubscribe in case WebSocket dropped
+      try{
+        sb.removeAllChannels();
+        subscribe();
+      }catch(e){}
+    }
+  }
+});
+
+// Manual refresh button
+function manualRefresh(){
+  const btn=document.getElementById('btn-refresh');
+  const svg=btn?.querySelector('svg');
+  if(svg)svg.style.animation='spin 0.6s linear infinite';
+  if(sb){
+    loadAll().then(()=>{
+      if(svg)svg.style.animation='';
+    }).catch(()=>{
+      if(svg)svg.style.animation='';
+    });
+  } else {
+    refreshAll();
+    if(svg)svg.style.animation='';
+  }
+}
+
+function initSB(){
+  try{
+    sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+    loadAll();
+    subscribe();
+    setSS('live');
+  }catch(e){setSS('err');}
+}
+function setSS(s){
+  const d=document.getElementById('sdot'),l=document.getElementById('slabel');
+  if(s==='live'){d.className='sync-dot live';l.textContent='Live sync on';}
+  else if(s==='err'){d.className='sync-dot err';l.textContent='Sync error';}
+  else{d.className='sync-dot';l.textContent='Local mode';}
+}
+async function loadAll(){
+  if(!sb)return;
+  const[{data:sc},{data:pr},{data:hc},{data:lk},{data:st},{data:hh}]=await Promise.all([sb.from('omega_scores').select('*'),sb.from('omega_pairings').select('*'),sb.from('omega_handicaps').select('*'),sb.from('omega_locks').select('*'),sb.from('omega_settings').select('*'),sb.from('omega_hcp_history').select('*')]);
+  if(sc)sc.forEach(r=>{if(!SCORES[r.player])SCORES[r.player]={};SCORES[r.player][r.round]=r.holes;});
+  if(pr)pr.forEach(r=>{PAIRINGS[r.round]=r.data;});
+  if(hc)hc.forEach(r=>{HCP[r.player]=r.hcp;});
+  if(lk)lk.forEach(r=>{LOCKED_ROUNDS[r.round]=r.locked;});
+  if(hh)hh.forEach(r=>{if(!HCP_HISTORY[r.player])HCP_HISTORY[r.player]={};HCP_HISTORY[r.player][r.round]=r.hcp;});
+  if(st){const sp=st.find(r=>r.key==='scores_pin');if(sp)SCORES_PIN=sp.value;
+  const cd=st.find(r=>r.key==='countdown_target');if(cd){COUNTDOWN_TARGET=new Date(cd.value);const parts=cd.value.split('T');if(parts.length===2){const di=document.getElementById('cd-date-input');const ti=document.getElementById('cd-time-input');if(di)di.value=parts[0];if(ti)ti.value=parts[1].substring(0,5);}}}
+  refreshAll();
+}
+function subscribe(){
+  if(!sb)return;
+  sb.channel('omega').on('postgres_changes',{event:'*',schema:'public',table:'omega_locks'},p=>{const r=p.new;if(r){LOCKED_ROUNDS[r.round]=r.locked;refreshAll();}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_scores'},p=>{const r=p.new;if(r){if(!SCORES[r.player])SCORES[r.player]={};SCORES[r.player][r.round]=r.holes;refreshAll();}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_pairings'},p=>{const r=p.new;if(r){PAIRINGS[r.round]=r.data;refreshAll();}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_handicaps'},p=>{const r=p.new;if(r){HCP[r.player]=r.hcp;refreshAll();}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_hcp_history'},p=>{const r=p.new;if(r){if(!HCP_HISTORY[r.player])HCP_HISTORY[r.player]={};HCP_HISTORY[r.player][r.round]=r.hcp;refreshAll();}}).subscribe();
+}
+async function pushScore(p,round,holes){if(!sb)return;await sb.from('omega_scores').upsert({player:p,round,holes,updated_at:new Date().toISOString()},{onConflict:'player,round'});}
+async function pushPairings(round,data){if(!sb)return;await sb.from('omega_pairings').upsert({round,data,updated_at:new Date().toISOString()},{onConflict:'round'});}
+async function pushHcp(player,hcp){if(!sb)return;await sb.from('omega_handicaps').upsert({player,hcp,updated_at:new Date().toISOString()},{onConflict:'player'});}
+async function pushHcpHistory(player,round,hcp){if(!sb)return;await sb.from('omega_hcp_history').upsert({player,round,hcp,updated_at:new Date().toISOString()},{onConflict:'player,round'});}
+async function pushLock(round,locked){if(!sb)return;await sb.from('omega_locks').upsert({round,locked,updated_at:new Date().toISOString()},{onConflict:'round'});}
+
+// Helpers
+function cHcp(name,ci){const c=COURSES[ci];if(c.noStrokes)return 0;const round=ci+1;const lockedHcp=(LOCKED_ROUNDS[round]&&HCP_HISTORY[name]&&HCP_HISTORY[name][round]!==undefined)?HCP_HISTORY[name][round]:HCP[name];return(lockedHcp*c.slope/113)+(c.rating-c.par);}
+function getHcpForRound(name,round){return(LOCKED_ROUNDS[round]&&HCP_HISTORY[name]&&HCP_HISTORY[name][round]!==undefined)?HCP_HISTORY[name][round]:HCP[name];}
+
+// R3 scramble group helpers
+function r3BeetsKey(groupIdx){return `r3_beets_${groupIdx}`;}
+function r3CommonsKey(groupIdx){return `r3_commons_${groupIdx}`;}
+function r3Groups(){
+  return (PAIRINGS[3]||[]).map((pair,i)=>{
+    const bN=(pair.beets||[]).filter(n=>n&&n!=='–');
+    const cN=(pair.commons||[]).filter(n=>n&&n!=='–');
+    if(!bN.length&&!cN.length)return null;
+    return{
+      beetsKey:r3BeetsKey(i),
+      commonsKey:r3CommonsKey(i),
+      beetsLabel:bN.join(' / '),
+      commonsLabel:cN.join(' / '),
+      fullLabel:[...bN,...cN].join(' / '),
+      beets:bN,commons:cN,teeTime:pair.teeTime,idx:i
+    };
+  }).filter(Boolean);
+}
+
+function initCollapse(container){
+  container.querySelectorAll('.mc').forEach(mc=>{
+    mc.classList.add('collapsed');
+    mc.querySelector('.mch').addEventListener('click',function(){
+      mc.classList.toggle('collapsed');
+    });
+  });
+}
+
+// Match play hole-by-hole status using net scores (for R2/R3 best ball, R4 singles)
+function mpNetStat(bNames, cNames, round, strokeMap){
+  let bW=0,cW=0,th=0;
+  for(let h=0;h<18;h++){
+    const bScores=bNames.map(n=>{
+      const g=getH(n,round)[h];
+      if(!g)return null;
+      const str=strokeMap?strokeMap[n]||0:0;
+      const strokeHoles=getStrokeHoles(str,round);
+      return g-strokeHoles[h];
+    }).filter(v=>v!==null);
+    const cScores=cNames.map(n=>{
+      const g=getH(n,round)[h];
+      if(!g)return null;
+      const str=strokeMap?strokeMap[n]||0:0;
+      const strokeHoles=getStrokeHoles(str,round);
+      return g-strokeHoles[h];
+    }).filter(v=>v!==null);
+    if(bScores.length&&cScores.length){
+      th++;
+      const bBest=Math.min(...bScores),cBest=Math.min(...cScores);
+      if(bBest<cBest)bW++;else if(cBest<bBest)cW++;
+    }
+  }
+  const diff=bW-cW,hl=18-th;
+  const up=diff>0?'beets':diff<0?'commons':'tied';
+  let status='';
+  if(th===0)status='Not started';
+  else if(Math.abs(diff)>hl)status=`${up==='beets'?'Beets':'Commons'} wins`;
+  else if(th===18&&diff===0)status='Halved';
+  else if(th===18)status=`${up==='beets'?'Beets':'Commons'} wins ${Math.abs(diff)} up`;
+  else if(diff===0)status='All square';
+  else status=`${up==='beets'?'Beets':'Commons'} ${Math.abs(diff)} up`;
+  return{up,th,diff,status};
+}
+
+// Match play standing label for header — short format
+function mpStandingLabel(diff, th, up){
+  if(th===0)return{txt:'–',col:'var(--text-hint)'};
+  if(diff===0)return{txt:'AS',col:'var(--text-secondary)'};
+  const col=up==='beets'?'var(--green-mid)':'var(--blue)';
+  const team=up==='beets'?'Beets':'Commons';
+  return{txt:`${team} +${Math.abs(diff)}`,col};
+}
+
+// Get strokes allocated per hole for a player given their net strokes vs low in group
+// Returns array of 18 booleans — true if player gets a stroke on that hole
+function getStrokeHoles(playerStrokes, round){
+  if(!SI[round]||playerStrokes<=0)return Array(18).fill(0);
+  const si=SI[round];
+  // Each pass through 18 holes gives 1 stroke to holes in SI order
+  // e.g. 30 strokes = 2 strokes on SI 1-12, 1 stroke on SI 13-18
+  return si.map(hSI=>{
+    const full=Math.floor(playerStrokes/18);
+    const rem=playerStrokes%18;
+    return full+(hSI<=rem?1:0);
+  });
+}
+
+// Get net strokes for each player in a group (low hcp = 0, others = their hcp - low hcp)
+function groupStrokes(names, round){
+  const hcps=names.map(n=>cHcp(n,round-1));
+  const low=Math.min(...hcps);
+  return names.reduce((obj,n,i)=>{obj[n]=Math.round(hcps[i]-low);return obj;},{});
+}
+function ptsNeeded(name,ci){return Math.round(36-cHcp(name,ci));}
+function getH(name,round){return(SCORES[name]&&SCORES[name][round])?SCORES[name][round]:Array(18).fill(0);}
+function hPlayed(name,round){return getH(name,round).filter(s=>s>0).length;}
+function sfPts(name,round){return getH(name,round).reduce((pts,g,h)=>{if(!g)return pts;const d=g-PAR[h];return pts+(d>=2?0:d===1?1:d===0?2:d===-1?4:d<=-2?6:0);},0);}
+function hcls(g,p){if(!g)return 'hem';const d=g-p;return d<=-3?'hbt':d===-2?'he':d===-1?'hbi':d===0?'hp':d===1?'hbo':'hd';}
+function dc(d){return d<0?'dp':d===0?'dz':'dn';}
+function pcls(u){return u==='beets'?'pb':u==='commons'?'pc':'pt';}
+function mpStat(bH,cH,bS,cS){let bW=0,cW=0,th=0;for(let h=0;h<18;h++){if(bH[h]>0&&cH[h]>0){th++;const bn=bH[h]-(bS>=(h+1)?1:0),cn=cH[h]-(cS>=(h+1)?1:0);if(bn<cn)bW++;else if(cn<bn)cW++;}}const diff=bW-cW,hl=18-th,up=diff>0?'beets':diff<0?'commons':'tied';let r='Not started';if(th>0){if(Math.abs(diff)>hl)r=`${up==='beets'?'Beets':'Commons'} wins`;else if(th===18&&diff===0)r='Halved';else if(th===18)r=`${up==='beets'?'Beets':'Commons'} wins ${Math.abs(diff)} up`;else r=diff===0?`All square · Thru ${th}`:`${up==='beets'?'Beets':'Commons'} ${Math.abs(diff)} up · Thru ${th}`;}return{up,th,r};}
+function bbStat(bN,cN,round){const allN=[...bN,...cN];const sm=groupStrokes(allN,round);let bW=0,cW=0,th=0;for(let h=0;h<18;h++){const bs=bN.map(n=>{const g=getH(n,round)[h];if(!g)return null;const sh=getStrokeHoles(sm[n]||0,round);return g-(sh[h]);}).filter(v=>v!==null);const cs=cN.map(n=>{const g=getH(n,round)[h];if(!g)return null;const sh=getStrokeHoles(sm[n]||0,round);return g-(sh[h]);}).filter(v=>v!==null);if(bs.length&&cs.length){th++;const bb=Math.min(...bs),cb=Math.min(...cs);if(bb<cb)bW++;else if(cb<bb)cW++;}}const diff=bW-cW,hl=18-th,up=diff>0?'beets':diff<0?'commons':'tied';let r='Not started';if(th>0){if(Math.abs(diff)>hl)r=`${up==='beets'?'Beets':'Commons'} wins`;else if(th===18&&diff===0)r='Halved';else if(th===18)r=`${up==='beets'?'Beets':'Commons'} wins ${Math.abs(diff)} up`;else r=diff===0?`All square · Thru ${th}`:`${up==='beets'?'Beets':'Commons'} ${Math.abs(diff)} up · Thru ${th}`;}return{up,th,r};}
+function hrowsFront(names,round,col){return names.map(name=>{const holes=getH(name,round),ch=cHcp(name,round-1);const firstName=name.split(' ')[0];const f=holes.slice(0,9).map((s,h)=>`<div class="hcell ${s?hcls(s,PAR[h]):'hem'}">${s||'–'}</div>`).join('');return`<div style="margin-bottom:3px;"><div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;margin-bottom:2px;">${name} · hcp ${ch.toFixed(1)}</div><div class="hrow"><div class="hname" style="color:${col};">${firstName}</div>${f}</div></div>`;}).join('');}
+function hrowsBack(names,round,col){return names.map(name=>{const holes=getH(name,round);const firstName=name.split(' ')[0];const b=holes.slice(9,18).map((s,h)=>`<div class="hcell ${s?hcls(s,PAR[h+9]):'hem'}">${s||'–'}</div>`).join('');return`<div style="margin-bottom:3px;"><div class="hrow"><div class="hname" style="color:${col};">${firstName}</div>${b}</div></div>`;}).join('');}
+function hrows(names,round,col,strokeMap){return names.map(name=>{const holes=getH(name,round),ch=cHcp(name,round-1);const firstName=name.split(' ')[0];const playerStrokes=strokeMap?strokeMap[name]||0:0;const strokeHoles=getStrokeHoles(playerStrokes,round);const fHoles=holes.slice(0,9),bHoles=holes.slice(9,18);const fTot=fHoles.reduce((s,v)=>s+(v||0),0);const bTot=bHoles.reduce((s,v)=>s+(v||0),0);const fNetTot=fHoles.reduce((s,v,h)=>s+(v?v-strokeHoles[h]:0),0);const bNetTot=bHoles.reduce((s,v,h)=>s+(v?v-strokeHoles[h+9]:0),0);const f=fHoles.map((s,h)=>{const net=strokeHoles[h]?s-strokeHoles[h]:null;const cls=s?hcls(net!==null?net:s,PAR[h]):'hem';const disp=s?(net!==null?`<span style="font-size:8px;">${s}<span style="color:var(--amber);">/${net}</span></span>`:`${s}`):'–';return`<div class="hcell ${cls}" style="${strokeHoles[h]?'outline:1px solid var(--amber);':''};">${disp}</div>`;}).join('');const b=bHoles.map((s,h)=>{const net=strokeHoles[h+9]?s-strokeHoles[h+9]:null;const cls=s?hcls(net!==null?net:s,PAR[h+9]):'hem';const disp=s?(net!==null?`<span style="font-size:8px;">${s}<span style="color:var(--amber);">/${net}</span></span>`:`${s}`):'–';return`<div class="hcell ${cls}" style="${strokeHoles[h+9]?'outline:1px solid var(--amber);':''};">${disp}</div>`;}).join('');const fTotCell=`<div class="hcell" style="background:var(--bg-secondary);font-weight:700;color:var(--text);font-size:8px;">${fTot?(fNetTot!==fTot?`${fTot}<span style="color:var(--amber);">/${fNetTot}</span>`:fTot):'–'}</div>`;const bTotCell=`<div class="hcell" style="background:var(--bg-secondary);font-weight:700;color:var(--text);font-size:8px;">${bTot?(bNetTot!==bTot?`${bTot}<span style="color:var(--amber);">/${bNetTot}</span>`:bTot):'–'}</div>`;const total=fTot+bTot;const strokeLabel=strokeMap?(playerStrokes===0?`0 str (hcp ${ch.toFixed(1)})`:playerStrokes+` str (hcp ${ch.toFixed(1)})`):('hcp '+ch.toFixed(1));const dotStr=strokeMap&&playerStrokes>0?` <span style="color:var(--amber);font-size:9px;">${'●'.repeat(Math.min(playerStrokes,5))}${playerStrokes>5?'+':''}</span>`:'';const netTotal=fNetTot+bNetTot;const totalCell=total?`<div class="hrow" style="margin-top:3px;"><div class="hname" style="font-size:9px;color:var(--text-hint);font-family:'DM Mono',monospace;text-transform:uppercase;">Total</div>${Array.from({length:9},()=>'<div></div>').join('')}<div class="hcell" style="background:var(--border-strong);font-weight:700;color:var(--text);font-size:8px;">${total}${netTotal!==total?`<span style="color:var(--amber);">/${netTotal}</span>`:''}</div></div>`:'';
+return`<div style="margin-bottom:8px;"><div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;margin-bottom:2px;">${name}${dotStr} · ${strokeLabel}</div><div class="hrow"><div class="hname" style="color:${col};">${firstName}</div>${f}${fTotCell}</div><div class="hrow" style="margin-top:2px;"><div class="hname"></div>${b}${bTotCell}</div>${totalCell}</div>`;}).join('');}
+
+// Nav
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(b=>b.classList.remove('active'));
+  const pageId=id==='dash'?'dashboard':id;
+  const pageEl=document.getElementById('page-'+pageId);
+  const navEl=document.getElementById('nav-'+id);
+  if(pageEl)pageEl.classList.add('active');
+  if(navEl)navEl.classList.add('active');
+  if(id==='matches')renderMatches();
+}
+
+// Match tabs
+function renderMatchTabs(){
+  const labels={1:'R1 · Stableford',2:'R2 · Best Ball',3:'R3 · Scramble',4:'R4 · Singles'};
+  const row=document.getElementById('match-tabrow');
+  if(!row)return;
+  row.innerHTML=[1,2,3,4].map(r=>`<button class="tbtn${curMatchRound===r?' active':''}" onclick="showTab(${r})">${labels[r]}${LOCKED_ROUNDS[r]?' 🔒':''}</button>`).join('');
+}
+
+function showTab(r){
+  curMatchRound=r;
+  renderMatchTabs();
+  renderMatches();
+}
+
+// Render matches
+function renderMatches(){
+  const r=curMatchRound,el=document.getElementById('mcontent');
+  if(r===1){
+    let h=`<div style="font-size:11px;color:var(--text-hint);font-family:'DM Mono',monospace;margin-bottom:.875rem;">4 matches · 1 pt each · 0.5 for tie · lowest delta wins</div>`;
+    let r1bPts=0,r1cPts=0;
+    const r1Pairs=(PAIRINGS[1]&&PAIRINGS[1].length)?PAIRINGS[1].map(p=>({teeTime:p.teeTime,beets:(p.beets||[]).filter(n=>n&&n!=='–'),commons:(p.commons||[]).filter(n=>n&&n!=='–')})).filter(p=>p.beets.length||p.commons.length):R1;
+    if(!r1Pairs.length){el.innerHTML='<div class="card"><div class="tbd">Set R1 pairings in Admin.</div></div>';return;}
+    r1Pairs.forEach(pair=>{
+      const bN=pair.beets,cN=pair.commons;
+      const bP=bN.reduce((s,n)=>s+sfPts(n,1),0),cP=cN.reduce((s,n)=>s+sfPts(n,1),0);
+      const bNd=bN.reduce((s,n)=>s+ptsNeeded(n,0),0),cNd=cN.reduce((s,n)=>s+ptsNeeded(n,0),0);
+      const bD=bNd-bP,cD=cNd-cP,_thArr=[...bN,...cN].map(n=>hPlayed(n,1)),th=_thArr.length?Math.max(..._thArr):0;
+      const allDone=[...bN,...cN].every(n=>hPlayed(n,1)===18);
+      const up=th===0?'tied':bD<cD?'beets':cD<bD?'commons':'tied';
+      let st,bMatch,cMatch;
+      if(th===0){st='Not started';bMatch=0;cMatch=0;}
+      else if(allDone&&up==='tied'){st='Halved · ½ pt each';bMatch=0.5;cMatch=0.5;}
+      else if(allDone&&up==='beets'){st='Beets win · 1 pt';bMatch=1;cMatch=0;}
+      else if(allDone&&up==='commons'){st='Commons win · 1 pt';bMatch=0;cMatch=1;}
+      else if(up==='beets'){st='Beets leading';bMatch=0;cMatch=0;}
+      else if(up==='commons'){st='Commons leading';bMatch=0;cMatch=0;}
+      else{st='All square';bMatch=0;cMatch=0;}
+      r1bPts+=bMatch;r1cPts+=cMatch;
+      h+=`<div class="mc"><div class="mch"><span class="mct"><span style="display:block;">${pair.teeTime}</span><span style="display:block;font-size:10px;color:var(--text-hint);margin-top:2px;font-weight:400;letter-spacing:0;text-transform:none;"><span style="color:var(--green-mid);">${bN.join(' / ')}</span> <span style="color:var(--text-hint);">vs</span> <span style="color:var(--blue);">${cN.join(' / ')}</span></span></span><span class="mcs ${pcls(up)}">${st}</span><span></span></div><div class="mcb"><div class="msides"><div><div class="msn" style="color:var(--green-mid);">The Beets</div><div class="msp">${bN.join(' / ')}</div><div class="msbig sg">${bP}<span style="font-size:13px;color:var(--text-hint);"> pts</span></div><div class="mssub">Need ${bNd} · <span class="${dc(bD)}">${bD>0?'+':''}${bD}</span></div></div><div class="mctr"><div class="mtl">Thru</div><div class="mtv">${th}</div></div><div style="text-align:right;"><div class="msn" style="color:var(--blue);">The Commons</div><div class="msp">${cN.join(' / ')}</div><div class="msbig sb">${cP}<span style="font-size:13px;color:var(--text-hint);"> pts</span></div><div class="mssub">Need ${cNd} · <span class="${dc(cD)}">${cD>0?'+':''}${cD}</span></div></div></div><div style="border-top:1px solid var(--border);padding-top:.75rem;">${[...bN.map(n=>({n,col:'var(--green-mid)'})),...cN.map(n=>({n,col:'var(--blue)'}))].map(({n,col})=>{const ch=cHcp(n,0),pts=sfPts(n,1),nd=ptsNeeded(n,0),d=nd-pts;return`<div class="prow"><span style="font-weight:500;">${n} <span style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;">${ch.toFixed(1)}</span></span><span style="font-family:'DM Mono',monospace;font-size:11px;">${pts}pts · Need ${nd} · <span class="${dc(d)}">${d>0?'+':''}${d}</span></span></div>`;}).join('')}</div></div></div>`;
+    });
+    // Summary row
+    const r1up=r1bPts>r1cPts?'beets':r1cPts>r1bPts?'commons':'tied';
+    h=`<div class="card" style="margin-bottom:.875rem;"><div style="display:flex;justify-content:space-between;align-items:center;"><div style="font-size:12px;font-weight:600;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;">R1 Score</div><span class="mcs ${pcls(r1up)}" style="font-size:11px;">${r1bPts>r1cPts?'Beets lead':r1cPts>r1bPts?'Commons lead':'Tied'}</span></div><div style="display:flex;justify-content:space-around;padding:.75rem 0 .25rem;"><div style="text-align:center;"><div style="font-size:11px;color:var(--text-secondary);font-family:'DM Mono',monospace;margin-bottom:2px;">Beets</div><div style="font-size:32px;font-weight:600;color:var(--green-mid);">${r1bPts}</div></div><div style="font-size:14px;color:var(--text-hint);font-family:'DM Mono',monospace;align-self:center;">vs</div><div style="text-align:center;"><div style="font-size:11px;color:var(--text-secondary);font-family:'DM Mono',monospace;margin-bottom:2px;">Commons</div><div style="font-size:32px;font-weight:600;color:var(--blue);">${r1cPts}</div></div></div></div>`+h;
+    el.innerHTML=h;initCollapse(el);
+  }else if(r===4){
+    const gs=PAIRINGS[4];
+    if(!gs||!gs.length){el.innerHTML='<div class="card"><div class="tbd">Set R4 pairings in Admin.</div></div>';return;}
+    let h=`<div style="font-size:11px;color:var(--text-hint);font-family:'DM Mono',monospace;margin-bottom:.875rem;">8 singles · 2 per tee time</div>`;
+    gs.forEach(g=>{
+      h+=`<div class="mc"><div class="mch"><span class="mct"><span style="display:block;">${g.teeTime}</span><span style="display:block;font-size:10px;color:var(--text-hint);margin-top:2px;font-weight:400;letter-spacing:0;text-transform:none;">${(g.matches||[]).filter(m=>m.beets&&m.beets!=='–').map(m=>`<span style="color:var(--green-mid);">${m.beets}</span> <span style="color:var(--text-hint);">vs</span> <span style="color:var(--blue);">${m.commons}</span>`).join(' &nbsp;·&nbsp; ')}</span></span><span></span></div><div class="mcb">`;
+      (g.matches||[]).forEach((m,mi)=>{
+        if(!m.beets||!m.commons||m.beets==='–'||m.commons==='–')return;
+        const s=mpStat(getH(m.beets,4),getH(m.commons,4),Math.round(cHcp(m.beets,3)),Math.round(cHcp(m.commons,3)));
+        const bC=cHcp(m.beets,3),cC=cHcp(m.commons,3);
+        if(mi>0)h+=`<hr style="border:none;border-top:1px dashed var(--border);margin:.875rem 0;">`;
+        h+=(()=>{
+  const sm4=groupStrokes([m.beets,m.commons],4);
+  const ms4=mpNetStat([m.beets],[m.commons],4,sm4);
+  const lbl4=mpStandingLabel(ms4.diff,ms4.th,ms4.up);
+  // Build hole tracker
+  let t4bW=0,t4cW=0;
+  const t4cells=Array.from({length:18},(_,h)=>{
+    const bG=getH(m.beets,4)[h],cG=getH(m.commons,4)[h];
+    if(!bG||!cG)return'<div style="font-size:8px;text-align:center;color:var(--text-hint);">–</div>';
+    const bSH=getStrokeHoles(sm4[m.beets]||0,4),cSH=getStrokeHoles(sm4[m.commons]||0,4);
+    const bNet=bG-bSH[h],cNet=cG-cSH[h];
+    if(bNet<cNet)t4bW++;else if(cNet<bNet)t4cW++;
+    const run=t4bW-t4cW;
+    const col=run>0?'var(--green-mid)':run<0?'var(--blue)':'var(--text-hint)';
+    const lbl=run>0?`B+${run}`:run<0?`C+${Math.abs(run)}`:`AS`;
+    return`<div style="font-size:8px;text-align:center;font-family:'DM Mono',monospace;font-weight:600;color:${col};">${lbl}</div>`;
+  });
+  const t4HTML=`<div style="border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:6px 0;margin:8px 0;"><div style="font-size:9px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;color:var(--text-hint);margin-bottom:4px;">Hole Result · Running Score</div><div class="hrow"><div class="hname" style="font-size:8px;color:var(--text-hint);"></div>${t4cells.slice(0,9).join('')}<div></div></div><div class="hrow" style="margin-top:3px;"><div class="hname"></div>${t4cells.slice(9,18).join('')}<div></div></div></div>`;
+  return`<div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;"><div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--text-hint);">MATCH ${mi+1}</div><span class="mcs ${pcls(s.up)}">${s.r}</span></div><div class="msides" style="margin-bottom:.75rem;grid-template-columns:1fr 56px 56px 1fr;"><div><div class="msn" style="color:var(--green-mid);">Beets</div><div class="msp">${m.beets}</div><div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;margin-top:2px;">hcp ${bC.toFixed(1)} · ${Math.round(bC)} str</div></div><div class="mctr"><div class="mtl" style="font-size:8px;">Standing</div><div style="font-size:11px;font-weight:600;color:${lbl4.col};text-align:center;line-height:1.2;">${lbl4.txt}</div></div><div class="mctr"><div class="mtl">Thru</div><div class="mtv">${ms4.th}</div></div><div style="text-align:right;"><div class="msn" style="color:var(--blue);">Commons</div><div class="msp">${m.commons}</div><div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;margin-top:2px;">hcp ${cC.toFixed(1)} · ${Math.round(cC)} str</div></div></div><div style="border-top:1px solid var(--border);padding-top:.75rem;"><div class="hhdr"><div style="color:var(--text-hint);">Player</div>${Array.from({length:9},(_,i)=>`<div>${i+1} · Par ${PAR[i]}</div>`).join('')}<div>Tot</div></div><div class="hhdr" style="margin-top:1px;margin-bottom:4px;"><div></div>${Array.from({length:9},(_,i)=>`<div>${i+10} · Par ${PAR[i+9]}</div>`).join('')}<div>Tot</div></div>${hrows([m.beets],4,'var(--green-mid)',sm4)}</div>${t4HTML}<div style="border-top:1px solid var(--border);padding-top:.75rem;"><div class="hhdr"><div style="color:var(--text-hint);">Player</div>${Array.from({length:9},(_,i)=>`<div>${i+1} · Par ${PAR[i]}</div>`).join('')}<div>Tot</div></div><div class="hhdr" style="margin-top:1px;margin-bottom:4px;"><div></div>${Array.from({length:9},(_,i)=>`<div>${i+10} · Par ${PAR[i+9]}</div>`).join('')}<div>Tot</div></div>${hrows([m.commons],4,'var(--blue)',sm4)}</div></div>`;
+})();
+      });
+      h+=`</div></div>`;
+    });
+    // R4 summary
+    let r4bPts=0,r4cPts=0;
+    (PAIRINGS[4]||[]).forEach(g=>{
+      (g.matches||[]).forEach(m=>{
+        if(!m.beets||!m.commons||m.beets==='–'||m.commons==='–')return;
+        const s=mpStat(getH(m.beets,4),getH(m.commons,4),Math.round(cHcp(m.beets,3)),Math.round(cHcp(m.commons,3)));
+        if(s.th<18)return;
+        if(s.up==='beets')r4bPts+=1;else if(s.up==='commons')r4cPts+=1;else{r4bPts+=0.5;r4cPts+=0.5;}
+      });
+    });
+    const r4up=r4bPts>r4cPts?'beets':r4cPts>r4bPts?'commons':'tied';
+    h=`<div class="card" style="margin-bottom:.875rem;"><div style="display:flex;justify-content:space-between;align-items:center;"><div style="font-size:12px;font-weight:600;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;">R4 Score</div><span class="mcs ${pcls(r4up)}" style="font-size:11px;">${r4bPts>r4cPts?'Beets lead':r4cPts>r4bPts?'Commons lead':'Tied'}</span></div><div style="display:flex;justify-content:space-around;padding:.75rem 0 .25rem;"><div style="text-align:center;"><div style="font-size:11px;color:var(--text-secondary);font-family:'DM Mono',monospace;margin-bottom:2px;">Beets</div><div style="font-size:32px;font-weight:600;color:var(--green-mid);">${r4bPts}</div></div><div style="font-size:14px;color:var(--text-hint);font-family:'DM Mono',monospace;align-self:center;">vs</div><div style="text-align:center;"><div style="font-size:11px;color:var(--text-secondary);font-family:'DM Mono',monospace;margin-bottom:2px;">Commons</div><div style="font-size:32px;font-weight:600;color:var(--blue);">${r4cPts}</div></div></div></div>`+h;
+    el.innerHTML=h;initCollapse(el);
+  }else if(r===3){
+    // R3 Scramble — two scorecards per tee time (Beets vs Commons)
+    const groups=r3Groups();
+    if(!groups.length){el.innerHTML='<div class="card"><div class="tbd">Set R3 pairings in Admin.</div></div>';return;}
+    let h=`<div style="font-size:11px;color:var(--text-hint);font-family:'DM Mono',monospace;margin-bottom:.875rem;">Sat PM · Reflections · Scramble · 2 scorecards per tee time</div>`;
+
+    const groupRow=(key,names,col)=>{
+      const holes=getH(key,3);
+      const fHoles=holes.slice(0,9),bkHoles=holes.slice(9,18);
+      const fTot=fHoles.reduce((s,v)=>s+(v||0),0);
+      const bkTot=bkHoles.reduce((s,v)=>s+(v||0),0);
+      const f=fHoles.map((s,i2)=>`<div class="hcell ${s?hcls(s,PAR[i2]):'hem'}">${s||'–'}</div>`).join('');
+      const bk=bkHoles.map((s,i2)=>`<div class="hcell ${s?hcls(s,PAR[i2+9]):'hem'}">${s||'–'}</div>`).join('');
+      const fTotCell=`<div class="hcell" style="background:var(--bg-secondary);font-weight:700;color:var(--text);font-size:8px;">${fTot||'–'}</div>`;
+      const bkTotCell=`<div class="hcell" style="background:var(--bg-secondary);font-weight:700;color:var(--text);font-size:8px;">${bkTot||'–'}</div>`;
+      const total=fTot+bkTot;
+      const totalCell=total?`<div class="hrow" style="margin-top:3px;"><div class="hname" style="font-size:9px;color:var(--text-hint);font-family:'DM Mono',monospace;text-transform:uppercase;">Total</div>${Array.from({length:9},()=>'<div></div>').join('')}<div class="hcell" style="background:var(--border-strong);font-weight:700;color:var(--text);font-size:8px;">${total}</div></div>`:'';
+      return`<div style="margin-bottom:8px;"><div style="font-size:10px;color:${col};font-family:'DM Mono',monospace;font-weight:700;margin-bottom:2px;">${names.join(' / ')} · Scramble</div><div class="hrow"><div class="hname"></div>${f}${fTotCell}</div><div class="hrow" style="margin-top:2px;"><div class="hname"></div>${bk}${bkTotCell}</div>${totalCell}</div>`;
+    };
+
+    groups.forEach(g=>{
+      const bHoles=getH(g.beetsKey,3);
+      const cHoles=getH(g.commonsKey,3);
+      let bW=0,cW=0,th=0;
+      for(let i2=0;i2<18;i2++){
+        if(bHoles[i2]>0&&cHoles[i2]>0){th++;if(bHoles[i2]<cHoles[i2])bW++;else if(cHoles[i2]<bHoles[i2])cW++;}
+      }
+      const diff=bW-cW,hl=18-th;
+      const up=diff>0?'beets':diff<0?'commons':'tied';
+      let matchResult='Not started';
+      if(th>0){
+        if(Math.abs(diff)>hl)matchResult=`${up==='beets'?'Beets':'Commons'} wins`;
+        else if(th===18&&diff===0)matchResult='Halved';
+        else if(th===18)matchResult=`${up==='beets'?'Beets':'Commons'} wins ${Math.abs(diff)} up`;
+        else matchResult=diff===0?`All square · Thru ${th}`:`${up==='beets'?'Beets':'Commons'} ${Math.abs(diff)} up · Thru ${th}`;
+      }
+      const standLbl=mpStandingLabel(diff,th,up);
+      h+=(()=>{
+        // Build R3 hole tracker
+        let r3bW=0,r3cW=0;
+        const r3tracker=Array.from({length:18},(_,i2)=>{
+          const b=bHoles[i2],c=cHoles[i2];
+          if(!b||!c)return'<div style="font-size:8px;text-align:center;color:var(--text-hint);">–</div>';
+          if(b<c)r3bW++;else if(c<b)r3cW++;
+          const run=r3bW-r3cW;
+          const col=run>0?'var(--green-mid)':run<0?'var(--blue)':'var(--text-hint)';
+          const lbl=run>0?`B+${run}`:run<0?`C+${Math.abs(run)}`:`AS`;
+          return`<div style="font-size:8px;text-align:center;font-family:'DM Mono',monospace;font-weight:600;color:${col};">${lbl}</div>`;
+        });
+        const r3trackerHTML=`<div style="border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:6px 0;margin:8px 0;"><div style="font-size:9px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;color:var(--text-hint);margin-bottom:4px;">Hole Result · Running Score</div><div class="hrow"><div class="hname" style="font-size:8px;color:var(--text-hint);"></div>${r3tracker.slice(0,9).join('')}<div></div></div><div class="hrow" style="margin-top:3px;"><div class="hname"></div>${r3tracker.slice(9,18).join('')}<div></div></div></div>`;
+        return`<div class="mc"><div class="mch"><span class="mct"><span style="display:block;">${g.teeTime}</span><span style="display:block;font-size:10px;margin-top:2px;font-weight:400;letter-spacing:0;text-transform:none;"><span style="color:var(--green-mid);">${g.beetsLabel||'TBD'}</span> <span style="color:var(--text-hint);">vs</span> <span style="color:var(--blue);">${g.commonsLabel||'TBD'}</span></span></span><span class="mcs ${pcls(up)}">${matchResult}</span><span></span></div><div class="mcb">
+        <div class="msides" style="margin-bottom:.75rem;grid-template-columns:1fr 56px 56px 1fr;">
+          <div><div class="msn" style="color:var(--green-mid);">The Beets</div><div class="msp">${g.beetsLabel||'TBD'}</div></div>
+          <div class="mctr"><div class="mtl" style="font-size:8px;">Standing</div><div style="font-size:11px;font-weight:600;color:${standLbl.col};text-align:center;line-height:1.2;">${standLbl.txt}</div></div>
+          <div class="mctr"><div class="mtl">Thru</div><div class="mtv">${th}</div></div>
+          <div style="text-align:right;"><div class="msn" style="color:var(--blue);">The Commons</div><div class="msp">${g.commonsLabel||'TBD'}</div></div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:.75rem;">
+          <div class="hhdr"><div style="color:var(--text-hint);">Group</div>${Array.from({length:9},(_,i2)=>`<div>${i2+1} · Par ${PAR[i2]}</div>`).join('')}<div>Tot</div></div>
+          <div class="hhdr" style="margin-top:1px;margin-bottom:4px;"><div></div>${Array.from({length:9},(_,i2)=>`<div>${i2+10} · Par ${PAR[i2+9]}</div>`).join('')}<div>Tot</div></div>
+          ${groupRow(g.beetsKey,g.beets,'var(--green-mid)')}
+          ${r3trackerHTML}
+          ${groupRow(g.commonsKey,g.commons,'var(--blue)')}
+        </div>
+      </div></div>`;
+      })();
+    });
+    // R3 summary
+    let r3bPts=0,r3cPts=0;
+    r3Groups().forEach(g=>{
+      const bH=getH(g.beetsKey,3),cH=getH(g.commonsKey,3);
+      let bW=0,cW=0,th=0;
+      for(let i=0;i<18;i++){if(bH[i]>0&&cH[i]>0){th++;if(bH[i]<cH[i])bW++;else if(cH[i]<bH[i])cW++;}}
+      if(th<18)return;
+      const diff=bW-cW;
+      if(diff>0)r3bPts+=1;else if(diff<0)r3cPts+=1;else{r3bPts+=0.5;r3cPts+=0.5;}
+    });
+    const r3up=r3bPts>r3cPts?'beets':r3cPts>r3bPts?'commons':'tied';
+    h=`<div class="card" style="margin-bottom:.875rem;"><div style="display:flex;justify-content:space-between;align-items:center;"><div style="font-size:12px;font-weight:600;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;">R3 Score</div><span class="mcs ${pcls(r3up)}" style="font-size:11px;">${r3bPts>r3cPts?'Beets lead':r3cPts>r3bPts?'Commons lead':'Tied'}</span></div><div style="display:flex;justify-content:space-around;padding:.75rem 0 .25rem;"><div style="text-align:center;"><div style="font-size:11px;color:var(--text-secondary);font-family:'DM Mono',monospace;margin-bottom:2px;">Beets</div><div style="font-size:32px;font-weight:600;color:var(--green-mid);">${r3bPts}</div></div><div style="font-size:14px;color:var(--text-hint);font-family:'DM Mono',monospace;align-self:center;">vs</div><div style="text-align:center;"><div style="font-size:11px;color:var(--text-secondary);font-family:'DM Mono',monospace;margin-bottom:2px;">Commons</div><div style="font-size:32px;font-weight:600;color:var(--blue);">${r3cPts}</div></div></div></div>`+h;
+    el.innerHTML=h;initCollapse(el);
+  }else{
+    const ps=PAIRINGS[r];
+    if(!ps||!ps.length){el.innerHTML=`<div class="card"><div class="tbd">Set R${r} pairings in Admin.</div></div>`;return;}
+    const lbl='Sat AM · Monarch · Best Ball';
+    let h=`<div style="font-size:11px;color:var(--text-hint);font-family:'DM Mono',monospace;margin-bottom:.875rem;">${lbl}</div>`;
+    ps.forEach(pair=>{
+      const bN=(pair.beets||[]).filter(n=>n&&n!=='–');
+      const cN=(pair.commons||[]).filter(n=>n&&n!=='–');
+      if(!bN.length&&!cN.length)return;
+      const s=bbStat(bN,cN,r);
+      h+=(()=>{const allN=[...bN,...cN];const sm=groupStrokes(allN,r);const bbNet=(names,h)=>{  const nets=names.map(n=>{const g=getH(n,r)[h];if(!g)return null;  const strokes=sm[n]||0;const sh=getStrokeHoles(strokes,r);  return g-(sh[h]);}).filter(v=>v!==null);  return nets.length?Math.min(...nets):null;};let bW=0,cW=0,th2=0;const trackerCells=Array.from({length:18},(_,h)=>{  const bn=bbNet(bN,h),cn=bbNet(cN,h);  if(bn===null||cn===null)return`<div style="font-size:8px;text-align:center;color:var(--text-hint);">–</div>`;  th2++;const diff2=bn-cn;  if(diff2<0)bW++;else if(diff2>0)cW++;  const run=bW-cW;  const col=run>0?'var(--green-mid)':run<0?'var(--blue)':'var(--text-hint)';  const lbl=run>0?`B+${run}`:run<0?`C+${Math.abs(run)}`:'AS';  return`<div style="font-size:8px;text-align:center;font-family:'DM Mono',monospace;font-weight:600;color:${col};">${lbl}</div>`;});const teamRow=(names,col,label)=>{  const fCells=Array.from({length:9},(_,h)=>{    const nets=names.map(n=>{const g=getH(n,r)[h];if(!g)return null;const sh=getStrokeHoles(sm[n]||0,r);const strokes=sh[h];return{g,net:g-strokes,hasStroke:strokes>0};}).filter(v=>v!==null);    if(!nets.length)return`<div class="hcell hem">–</div>`;    const best=nets.reduce((a,b)=>b.net<a.net?b:a);    return`<div class="hcell ${hcls(best.net,PAR[h])}">${best.hasStroke?`${best.g}/${best.net}`:`${best.g}`}</div>`;  }).join('');  const bCells=Array.from({length:9},(_,h)=>{    const nets=names.map(n=>{const g=getH(n,r)[h+9];if(!g)return null;const sh=getStrokeHoles(sm[n]||0,r);const strokes=sh[h+9];return{g,net:g-strokes,hasStroke:strokes>0};}).filter(v=>v!==null);    if(!nets.length)return`<div class="hcell hem">–</div>`;    const best=nets.reduce((a,b)=>b.net<a.net?b:a);    return`<div class="hcell ${hcls(best.net,PAR[h+9])}">${best.hasStroke?`${best.g}/${best.net}`:`${best.g}`}</div>`;  }).join('');  const fTot=Array.from({length:9},(_,h)=>{const nets=names.map(n=>{const g=getH(n,r)[h];if(!g)return null;const sh=getStrokeHoles(sm[n]||0,r);return g-(sh[h]);}).filter(v=>v!==null);return nets.length?Math.min(...nets):0;}).reduce((a,b)=>a+b,0);  const bTot=Array.from({length:9},(_,h)=>{const nets=names.map(n=>{const g=getH(n,r)[h+9];if(!g)return null;const sh=getStrokeHoles(sm[n]||0,r);return g-sh[h+9];}).filter(v=>v!==null);return nets.length?Math.min(...nets):0;}).reduce((a,b)=>a+b,0);  const fTotCell=`<div class="hcell" style="background:var(--bg-secondary);font-weight:700;color:${col};font-size:8px;">${fTot||'–'}</div>`;  const bTotCell=`<div class="hcell" style="background:var(--bg-secondary);font-weight:700;color:${col};font-size:8px;">${bTot||'–'}</div>`;  return`<div style="margin:6px 0 2px;"><div style="font-size:9px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;color:${col};font-weight:700;margin-bottom:3px;">${label} Best Ball</div><div class="hrow"><div class="hname" style="color:${col};">Front 9</div>${fCells}${fTotCell}</div><div class="hrow" style="margin-top:2px;"><div class="hname" style="color:${col};">Back 9</div>${bCells}${bTotCell}</div></div>`;};const trackerHTML=`<div style="border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:6px 0;margin:8px 0;"><div style="font-size:9px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;color:var(--text-hint);margin-bottom:4px;">Hole Result · Running Score</div><div class="hrow"><div class="hname" style="font-size:8px;color:var(--text-hint);"></div>${trackerCells.slice(0,9).join('')}<div></div></div><div class="hrow" style="margin-top:3px;"><div class="hname"></div>${trackerCells.slice(9,18).join('')}<div></div></div></div>`;return`<div class="mc"><div class="mch"><span class="mct"><span style="display:block;">${pair.teeTime}</span><span style="display:block;font-size:10px;color:var(--text-hint);margin-top:2px;font-weight:400;letter-spacing:0;text-transform:none;"><span style="color:var(--green-mid);">${bN.join(' / ')}</span> <span style="color:var(--text-hint);">vs</span> <span style="color:var(--blue);">${cN.join(' / ')}</span></span></span><span class="mcs ${pcls(s.up)}">${s.r}</span><span></span></div><div class="mcb"><div style="border-bottom:1px solid var(--border);padding-bottom:.75rem;margin-bottom:0;"><div class="hhdr"><div style="color:var(--blue);">Commons</div>${Array.from({length:9},(_,i)=>`<div>${i+1}·Par${PAR[i]}</div>`).join('')}<div>Tot</div></div><div class="hhdr" style="margin-top:1px;margin-bottom:4px;"><div></div>${Array.from({length:9},(_,i)=>`<div>${i+10}·Par${PAR[i+9]}</div>`).join('')}<div>Tot</div></div>${hrows(cN,r,'var(--blue)',sm)}${teamRow(cN,'var(--blue)','Commons')}</div>${trackerHTML}<div style="border-top:1px solid var(--border);padding-top:.75rem;">${teamRow(bN,'var(--green-mid)','Beets')}<div style="border-top:1px solid var(--border);padding-top:.75rem;margin-top:6px;"><div class="hhdr"><div style="color:var(--green-mid);">Beets</div>${Array.from({length:9},(_,i)=>`<div>${i+1}·Par${PAR[i]}</div>`).join('')}<div>Tot</div></div><div class="hhdr" style="margin-top:1px;margin-bottom:4px;"><div></div>${Array.from({length:9},(_,i)=>`<div>${i+10}·Par${PAR[i+9]}</div>`).join('')}<div>Tot</div></div>${hrows(bN,r,'var(--green-mid)',sm)}</div></div></div></div>`;})();
+    });
+    // R2 summary
+    let r2bPts=0,r2cPts=0;
+    (PAIRINGS[r]||[]).forEach(pair=>{
+      const bN=(pair.beets||[]).filter(n=>n&&n!=='–');
+      const cN=(pair.commons||[]).filter(n=>n&&n!=='–');
+      if(!bN.length||!cN.length)return;
+      const s=bbStat(bN,cN,r);
+      if(s.th<18)return;
+      if(s.up==='beets')r2bPts+=1;else if(s.up==='commons')r2cPts+=1;else{r2bPts+=0.5;r2cPts+=0.5;}
+    });
+    const r2up=r2bPts>r2cPts?'beets':r2cPts>r2bPts?'commons':'tied';
+    h=`<div class="card" style="margin-bottom:.875rem;"><div style="display:flex;justify-content:space-between;align-items:center;"><div style="font-size:12px;font-weight:600;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;">R2 Score</div><span class="mcs ${pcls(r2up)}" style="font-size:11px;">${r2bPts>r2cPts?'Beets lead':r2cPts>r2bPts?'Commons lead':'Tied'}</span></div><div style="display:flex;justify-content:space-around;padding:.75rem 0 .25rem;"><div style="text-align:center;"><div style="font-size:11px;color:var(--text-secondary);font-family:'DM Mono',monospace;margin-bottom:2px;">Beets</div><div style="font-size:32px;font-weight:600;color:var(--green-mid);">${r2bPts}</div></div><div style="font-size:14px;color:var(--text-hint);font-family:'DM Mono',monospace;align-self:center;">vs</div><div style="text-align:center;"><div style="font-size:11px;color:var(--text-secondary);font-family:'DM Mono',monospace;margin-bottom:2px;">Commons</div><div style="font-size:32px;font-weight:600;color:var(--blue);">${r2cPts}</div></div></div></div>`+h;
+    el.innerHTML=h;initCollapse(el);
+  }
+}
+
+// Schedule
+function renderSched(){
+  [1,2,3].forEach(r=>{
+    const el=document.getElementById('sched'+r),ps=PAIRINGS[r];
+    if(!ps||!ps.length){el.innerHTML='<div class="tbd">Pairings TBD</div>';return;}
+    let h='<table class="stbl"><thead><tr><th>Time</th><th>Beets</th><th>Commons</th></tr></thead><tbody>';
+    ps.forEach(p=>{const bL=(p.beets||[]).filter(n=>n&&n!=='–').join(' / ');const cL=(p.commons||[]).filter(n=>n&&n!=='–').join(' / ');h+=`<tr><td>${p.teeTime}</td><td>${bL||'TBD'}</td><td>${cL||'TBD'}</td></tr>`;});
+    document.getElementById('sched'+r).innerHTML=h+'</tbody></table>';
+  });
+  const el4=document.getElementById('sched4'),g4=PAIRINGS[4];
+  if(!g4||!g4.length){el4.innerHTML='<div class="tbd">Pairings TBD</div>';return;}
+  let h4='<table class="stbl"><thead><tr><th>Time</th><th>#</th><th>Beets</th><th>Commons</th></tr></thead><tbody>';
+  g4.forEach(g=>(g.matches||[]).forEach((m,mi)=>{h4+=`<tr><td style="font-family:'DM Mono',monospace;font-size:11px;">${mi===0?g.teeTime:''}</td><td style="color:var(--text-hint);">${mi+1}</td><td>${m.beets||'TBD'}</td><td>${m.commons||'TBD'}</td></tr>`;}));
+  el4.innerHTML=h4+'</tbody></table>';
+}
+
+// Players
+function renderPlayers(){
+  const fmtP=v=>v===Math.floor(v)?String(v):v.toFixed(1);
+
+  // Calculate team points contributed by a player (same logic as MVP)
+  function playerTeamPts(name){
+    let pts=0;
+    // R1
+    const _r1p=(PAIRINGS[1]&&PAIRINGS[1].length)?PAIRINGS[1].map(p=>({teeTime:p.teeTime,beets:(p.beets||[]).filter(n=>n&&n!=='–'),commons:(p.commons||[]).filter(n=>n&&n!=='–')})):R1;
+    _r1p.forEach(pair=>{
+      const bN=pair.beets,cN=pair.commons;
+      const inBeets=bN.includes(name),inCommons=cN.includes(name);
+      if(!inBeets&&!inCommons)return;
+      const allDone=[...bN,...cN].every(n=>hPlayed(n,1)===18);
+      if(!allDone)return;
+      const bNd=bN.reduce((s,n)=>s+ptsNeeded(n,0),0),cNd=cN.reduce((s,n)=>s+ptsNeeded(n,0),0);
+      const bD=bNd-bN.reduce((s,n)=>s+sfPts(n,1),0),cD=cNd-cN.reduce((s,n)=>s+sfPts(n,1),0);
+      const myD=inBeets?bD:cD,oppD=inBeets?cD:bD;
+      if(myD<oppD)pts+=1;else if(myD===oppD)pts+=0.5;
+    });
+    // R2
+    const r2ps=PAIRINGS[2];
+    if(r2ps){r2ps.forEach(pair=>{
+      const bN=(pair.beets||[]).filter(n=>n&&n!=='–');
+      const cN=(pair.commons||[]).filter(n=>n&&n!=='–');
+      const isBeets=bN.includes(name),isCommons=cN.includes(name);
+      if(!isBeets&&!isCommons)return;
+      const s=bbStat(bN,cN,2);
+      if(s.th<18)return;
+      if(s.up==='tied')pts+=0.5;
+      else if(s.up==='beets'&&isBeets)pts+=1;
+      else if(s.up==='commons'&&isCommons)pts+=1;
+    });}
+    // R4
+    const g4=PAIRINGS[4];
+    if(g4){g4.forEach(g=>(g.matches||[]).forEach(m=>{
+      if(!m.beets||!m.commons||m.beets==='–'||m.commons==='–')return;
+      if(m.beets!==name&&m.commons!==name)return;
+      const sm=groupStrokes([m.beets,m.commons],4);
+      const ms=mpNetStat([m.beets],[m.commons],4,sm);
+      if(ms.th<18)return;
+      const isBeets=m.beets===name;
+      if(ms.up==='tied')pts+=0.5;
+      else if(ms.up==='beets'&&isBeets)pts+=1;
+      else if(ms.up==='commons'&&!isBeets)pts+=1;
+    }));}
+    return pts;
+  }
+
+  // Gross and net score per round
+  function roundScores(name, round){
+    const holes=getH(name,round);
+    const played=holes.filter(s=>s>0).length;
+    if(!played)return null;
+    const gross=holes.reduce((s,v)=>s+(v||0),0);
+    const courseHcp=Math.round(cHcp(name,round-1));
+    const net=gross-courseHcp;
+    return{gross,net,played,courseHcp};
+  }
+
+  ['beets','commons'].forEach(team=>{
+    const names=team==='beets'?BEETS:COMMONS;
+    const isBeets=team==='beets';
+    document.getElementById(isBeets?'blist':'clist').innerHTML=names.map(name=>{
+      const ch1=cHcp(name,0),ch2=cHcp(name,1),ch4=cHcp(name,3);
+      const ini=name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+      const teamPts=playerTeamPts(name);
+      const r1=roundScores(name,1),r2=roundScores(name,2),r4=roundScores(name,4);
+      // R3 scramble — find this player's group score
+      const r3group=r3Groups().find(g=>[...g.beets,...g.commons].includes(name));
+      const r3key=r3group?(isBeets?r3group.beetsKey:r3group.commonsKey):null;
+      const r3holes=r3key?getH(r3key,3):null;
+      const r3played=r3holes?r3holes.filter(s=>s>0).length:0;
+      const r3gross=r3holes?r3holes.reduce((s,v)=>s+(v||0),0):0;
+      const r3label=r3group?(isBeets?r3group.beetsLabel:r3group.commonsLabel):null;
+      // Overall avg — R1/R2/R4 only, exclude scramble
+      const allGross=[r1,r2,r4].filter(Boolean).map(r=>r.gross);
+      const allNet=[r1,r2,r4].filter(Boolean).map(r=>r.net);
+      const avgGross=allGross.length?allGross.reduce((s,v)=>s+v,0)/allGross.length:null;
+      const avgNet=allNet.length?allNet.reduce((s,v)=>s+v,0)/allNet.length:null;
+      const hasScores=r1||r2||r4||r3played>0;
+
+      const roundRow=(label,r)=>r?`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:11px;"><span style="font-family:'DM Mono',monospace;color:var(--text-hint);">${label}</span><span style="font-family:'DM Mono',monospace;color:var(--text);">${r.gross} gross · ${r.net} net</span></div>`:'';
+      const scrambleRow=r3played>0?`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:11px;"><span style="font-family:'DM Mono',monospace;color:var(--text-hint);">R3 · Reflections</span><span style="font-family:'DM Mono',monospace;color:var(--text);">${r3gross} gross <span style="color:var(--text-hint);font-size:10px;">(scramble)</span></span></div>`:'';
+
+      return`<div style="padding:10px 0;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:${hasScores?'8px':'0'};">
+          <div class="pleft"><div class="av ${isBeets?'avg':'avb'}">${ini}</div><div><div style="display:flex;align-items:flex-start;gap:8px;"><div class="pname">${name}</div><div class="phcp" style="line-height:1.7;text-align:right;">idx ${getHcpForRound(name,0)??HCP[name]}${(LOCKED_ROUNDS[1]||LOCKED_ROUNDS[2]||LOCKED_ROUNDS[4])?'':''}<br>R1: ${ch1.toFixed(1)}${LOCKED_ROUNDS[1]?' 🔒':''}<br>R2: ${ch2.toFixed(1)}${LOCKED_ROUNDS[2]?' 🔒':''}<br>R4: ${ch4.toFixed(1)}${LOCKED_ROUNDS[4]?' 🔒':''}</div></div></div></div>
+          <div style="text-align:right;"><span class="badge ${isBeets?'bg':'bb'}">${isBeets?'Beets':'Commons'}</span><div style="font-size:11px;font-weight:600;color:${teamPts>0?'var(--amber)':'var(--text-hint)'};margin-top:4px;">${fmtP(teamPts)} team pts</div>
+          </div>
+        </div>
+        ${hasScores?`<div style="background:var(--bg-secondary);border-radius:var(--radius);padding:6px 10px;">
+          ${roundRow('R1 · Swampfire',r1)}
+          ${roundRow('R2 · Monarch',r2)}
+          ${scrambleRow}
+          ${roundRow('R4 · Fountains',r4)}
+          ${avgGross!==null?`<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:11px;font-weight:600;"><span style="font-family:'DM Mono',monospace;color:var(--text-secondary);">Weekend Avg</span><span style="font-family:'DM Mono',monospace;color:var(--text);">${avgGross.toFixed(1)} gross · ${avgNet.toFixed(1)} net <span style="font-size:9px;color:var(--text-hint);font-weight:400;">(R1/R2/R4)</span></span></div>`:''}
+        </div>`:''}
+      </div>`;
+    }).join('');
+  });
+}
+
+// Score entry
+function buildHoles(){
+  ['front9','back9'].forEach((id,si)=>{
+    const el=document.getElementById(id);el.innerHTML='';
+    for(let i=0;i<9;i++){const h=si*9+i;const c=document.createElement('div');c.className='scell';c.innerHTML=`<div class="shl">Hole ${h+1}<br>Par ${PAR[h]}</div><input class="sinp" type="number" min="1" max="15" id="h${h}" placeholder="–" inputmode="numeric">`;el.appendChild(c);}
+  });
+  document.getElementById('front9').querySelectorAll('input').forEach(inp=>inp.addEventListener('input',calcLive));
+  document.getElementById('back9').querySelectorAll('input').forEach(inp=>inp.addEventListener('input',calcLive));
+}
+
+function buildPlayerDrop(){
+  const sel=document.getElementById('entry-player'),cur=sel.value;
+  const r=parseInt(document.getElementById('entry-round')?.value)||1;
+  sel.innerHTML='<option value="">Select player...</option>';
+  if(r===3){
+    // Show 8 options — Beets pair and Commons pair for each tee time
+    r3Groups().forEach(g=>{
+      const ob=document.createElement('option');
+      ob.value=g.beetsKey;
+      ob.textContent=`🟢 ${g.beetsLabel} (${g.teeTime})`;
+      sel.appendChild(ob);
+      const oc=document.createElement('option');
+      oc.value=g.commonsKey;
+      oc.textContent=`🔵 ${g.commonsLabel} (${g.teeTime})`;
+      sel.appendChild(oc);
+    });
+  } else {
+    [...BEETS,...COMMONS].forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=`${n} (Hcp ${HCP[n]})`;sel.appendChild(o);});
+  }
+  if(cur)sel.value=cur;
+}
+
+function updateForm(){
+  const r=parseInt(document.getElementById('entry-round').value);
+  document.getElementById('sfref').style.display=r===1?'block':'none';
+  buildPlayerDrop();
+  loadPlayerScores();
+}
+
+function loadPlayerScores(){
+  const pn=document.getElementById('entry-player').value;
+  const r=parseInt(document.getElementById('entry-round').value);
+  const saved=pn&&SCORES[pn]&&SCORES[pn][r]?SCORES[pn][r]:null;
+  for(let h=0;h<18;h++){
+    const inp=document.getElementById('h'+h);
+    if(inp)inp.value=(saved&&saved[h]>0)?saved[h]:'';
+  }
+  // Update banner for R3 team pair
+  const banner=document.getElementById('hbanner');
+  if(r===3&&pn){
+    const g=r3Groups().find(g=>g.beetsKey===pn||g.commonsKey===pn);
+    if(g&&banner){
+      const isBeets=g.beetsKey===pn;
+      const label=isBeets?g.beetsLabel:g.commonsLabel;
+      const team=isBeets?'Beets':'Commons';
+      banner.style.display='block';
+      banner.innerHTML=`${label} · ${team} · No strokes (scramble)`;
+    }
+  }
+  calcLive();
+  updateScoreLockState();
+}
+
+function calcLive(){
+  const r=parseInt(document.getElementById('entry-round').value);
+  const pn=document.getElementById('entry-player').value;
+  const banner=document.getElementById('hbanner'),sbar=document.getElementById('sbar');
+  const f9el=document.getElementById('front9-pts'),b9el=document.getElementById('back9-pts'),totel=document.getElementById('total-pts');
+  const f9s=document.getElementById('front9-strokes'),b9s=document.getElementById('back9-strokes'),tots=document.getElementById('total-strokes');
+  const clearAll=()=>{
+    [f9el,b9el,totel,f9s,b9s,tots].forEach(el=>{if(el)el.textContent='–';});
+  };
+  if(!pn){banner.style.display='none';sbar.style.display='none';clearAll();return;}
+  const c=COURSES[r-1],ch=cHcp(pn,r-1);
+  banner.style.display='block';
+  banner.innerHTML=c.noStrokes?`${pn} · No strokes (scramble)`:`${pn} · Course hcp: ${ch.toFixed(1)} · Needs ${Math.round(36-ch)} pts`;
+  let gross=0,fPts=0,bPts=0,fStrokes=0,bStrokes=0,played=0;
+  for(let h=0;h<18;h++){
+    const v=parseInt(document.getElementById('h'+h)?.value);
+    if(!isNaN(v)&&v>0){
+      gross+=v;played++;
+      if(h<9)fStrokes+=v;else bStrokes+=v;
+      if(r===1){const d=v-PAR[h];const p=d>=2?0:d===1?1:d===0?2:d===-1?4:d<=-2?6:0;if(h<9)fPts+=p;else bPts+=p;}
+    }
+  }
+  const fPlayed=[...Array(9)].some((_,h)=>{const v=parseInt(document.getElementById('h'+h)?.value);return !isNaN(v)&&v>0;});
+  const bPlayed=[...Array(9)].some((_,h)=>{const v=parseInt(document.getElementById('h'+(h+9))?.value);return !isNaN(v)&&v>0;});
+  if(f9s)f9s.textContent=fPlayed?fStrokes:'–';
+  if(b9s)b9s.textContent=bPlayed?bStrokes:'–';
+  if(tots)tots.textContent=(fPlayed||bPlayed)?gross:'–';
+  if(r===1){
+    if(f9el)f9el.textContent=fPlayed?fPts:'–';
+    if(b9el)b9el.textContent=bPlayed?bPts:'–';
+    if(totel)totel.textContent=(fPlayed||bPlayed)?fPts+bPts:'–';
+  } else {
+    if(f9el)f9el.textContent='–';if(b9el)b9el.textContent='–';if(totel)totel.textContent='–';
+  }
+  if(!played){sbar.style.display='none';return;}
+  sbar.style.display='block';
+  sbar.innerHTML=`Thru ${played} · Gross ${gross}${r===1?` · ${fPts+bPts} pts`:''}`;
+}
+
+async function saveScore(){
+  const pn=document.getElementById('entry-player').value;
+  if(!pn){alert('Select a player/group first.');return;}
+  const r=parseInt(document.getElementById('entry-round').value);
+  const holes=[];
+  for(let h=0;h<18;h++)holes.push(parseInt(document.getElementById('h'+h)?.value)||0);
+  if(!holes.some(s=>s>0)){alert('Enter at least one hole score.');return;}
+  const btn=document.getElementById('btn-save');
+  btn.disabled=true;btn.textContent='Saving...';
+  // For R3 save under group key; for others save under player name
+  const key=r===3&&pn.startsWith('r3_group_')?pn:pn;
+  if(!SCORES[key])SCORES[key]={};
+  SCORES[key][r]=holes;
+  await pushScore(key,r,holes);
+  if(curMatchRound===r)renderMatches();
+  btn.disabled=false;btn.textContent='Save Scorecard';
+  loadPlayerScores();
+  let label=pn;
+  if(r===3){
+    const g=r3Groups().find(g=>g.beetsKey===pn||g.commonsKey===pn);
+    if(g)label=g.beetsKey===pn?`${g.beetsLabel} (Beets)`:`${g.commonsLabel} (Commons)`;
+  }
+  alert(`Saved for ${label} · Round ${r}`);
+}
+
+// Admin
+function checkPw(){
+  if(document.getElementById('adminpw').value===PW){
+    document.getElementById('adminlock').style.display='none';
+    document.getElementById('adminpanel').style.display='block';
+    buildHcpEditor();[1,2,3,4].forEach(buildPairEd);buildClearDrop();
+  }else{
+    document.getElementById('pwerr').style.display='block';
+    document.getElementById('adminpw').value='';
+  }
+}
+function lockAdmin(){
+  document.getElementById('adminlock').style.display='block';
+  document.getElementById('adminpanel').style.display='none';
+  document.getElementById('adminpw').value='';
+  document.getElementById('pwerr').style.display='none';
+}
+
+function syncPairSelects(round){
+  const el=document.getElementById('r'+round+'ed');
+  if(!el)return;
+  const sels=[...el.querySelectorAll('select')];
+  // Collect all currently chosen values
+  const chosen=new Set(sels.map(s=>s.value).filter(Boolean));
+  sels.forEach(sel=>{
+    const cur=sel.value;
+    [...sel.options].forEach(opt=>{
+      if(!opt.value)return;
+      opt.disabled=chosen.has(opt.value)&&opt.value!==cur;
+    });
+  });
+}
+
+function buildPairEd(round){
+  const el=document.getElementById('r'+round+'ed'),times=TTIMES[round],cur=PAIRINGS[round];
+  if(round===4){
+    let h='';
+    times.forEach((t,i)=>{
+      const cg=(cur&&cur[i])||{matches:[{},{}]},m=cg.matches||[{},{}];
+      h+=`<div class="pgbox"><div class="pghdr">${t}</div><div class="pgbody"><div class="smbox"><div class="smlabel">Match 1</div><div class="smsel"><select id="r4b0${i}"><option value="">— Beets —</option>${BEETS.map(n=>`<option value="${n}"${(m[0]&&m[0].beets===n)?' selected':''}>${n}</option>`).join('')}</select><div style="text-align:center;font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;">vs</div><select id="r4c0${i}"><option value="">— Commons —</option>${COMMONS.map(n=>`<option value="${n}"${(m[0]&&m[0].commons===n)?' selected':''}>${n}</option>`).join('')}</select></div></div><hr class="smdiv"><div class="smbox"><div class="smlabel">Match 2</div><div class="smsel"><select id="r4b1${i}"><option value="">— Beets —</option>${BEETS.map(n=>`<option value="${n}"${(m[1]&&m[1].beets===n)?' selected':''}>${n}</option>`).join('')}</select><div style="text-align:center;font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;">vs</div><select id="r4c1${i}"><option value="">— Commons —</option>${COMMONS.map(n=>`<option value="${n}"${(m[1]&&m[1].commons===n)?' selected':''}>${n}</option>`).join('')}</select></div></div></div></div>`;
+    });
+    el.innerHTML=h;
+    el.querySelectorAll('select').forEach(s=>s.addEventListener('change',()=>syncPairSelects(round)));
+    syncPairSelects(round);
+  }else{
+    let h='';
+    times.forEach((t,i)=>{
+      const c=(cur&&cur[i])||{},bC=c.beets||['',''],cC=c.commons||['',''];
+      h+=`<div class="pgbox"><div class="pghdr">${t}</div><div class="pgbody"><div class="p2col"><div><div class="pclabel" style="color:var(--green-mid);">Beets</div><div class="psels"><select id="r${round}b0${i}"><option value="">— p1 —</option>${BEETS.map(n=>`<option value="${n}"${bC[0]===n?' selected':''}>${n}</option>`).join('')}</select><select id="r${round}b1${i}"><option value="">— p2 —</option>${BEETS.map(n=>`<option value="${n}"${bC[1]===n?' selected':''}>${n}</option>`).join('')}</select></div></div><div class="pvctr">vs</div><div><div class="pclabel" style="color:var(--blue);">Commons</div><div class="psels"><select id="r${round}c0${i}"><option value="">— p1 —</option>${COMMONS.map(n=>`<option value="${n}"${cC[0]===n?' selected':''}>${n}</option>`).join('')}</select><select id="r${round}c1${i}"><option value="">— p2 —</option>${COMMONS.map(n=>`<option value="${n}"${cC[1]===n?' selected':''}>${n}</option>`).join('')}</select></div></div></div></div></div>`;
+    });
+    el.innerHTML=h;
+    el.querySelectorAll('select').forEach(s=>s.addEventListener('change',()=>syncPairSelects(round)));
+    syncPairSelects(round);
+  }
+}
+
+async function savePair(round){
+  const times=TTIMES[round];
+  let data;
+  if(round===4){
+    data=times.map((t,i)=>({teeTime:t,matches:[{beets:document.getElementById(`r4b0${i}`)?.value||'–',commons:document.getElementById(`r4c0${i}`)?.value||'–'},{beets:document.getElementById(`r4b1${i}`)?.value||'–',commons:document.getElementById(`r4c1${i}`)?.value||'–'}]}));
+  }else{
+    data=times.map((t,i)=>({teeTime:t,beets:[document.getElementById(`r${round}b0${i}`)?.value||'–',document.getElementById(`r${round}b1${i}`)?.value||'–'],commons:[document.getElementById(`r${round}c0${i}`)?.value||'–',document.getElementById(`r${round}c1${i}`)?.value||'–']}));
+  }
+  PAIRINGS[round]=data;
+  await pushPairings(round,data);
+  renderSched();if(curMatchRound===round)renderMatches();
+  const f=document.getElementById('r'+round+'flash');f.style.display='block';setTimeout(()=>f.style.display='none',2500);
+}
+
+function buildHcpEditor(){
+  ['beets','commons'].forEach(team=>{
+    const names=team==='beets'?BEETS:COMMONS;
+    document.getElementById('he'+team).innerHTML=names.map(name=>`<div class="herow"><div class="hename">${name}</div><input class="heinp" type="number" id="hcpinp_${name.replace(/[\s.]/g,'_')}" value="${HCP[name]}" step="0.1" min="0" max="54"><div class="heunit">idx</div></div>`).join('');
+  });
+}
+
+async function saveHcps(){
+  const updates=[...BEETS,...COMMONS].map(async name=>{
+    const v=parseFloat(document.getElementById('hcpinp_'+name.replace(/[\s.]/g,'_'))?.value);
+    if(!isNaN(v)&&v>=0){HCP[name]=v;await pushHcp(name,v);}
+  });
+  await Promise.all(updates);
+  renderPlayers();buildPlayerDrop();[1,2,3,4].forEach(buildPairEd);renderMatches();
+  const f=document.getElementById('hcpflash');f.style.display='block';setTimeout(()=>f.style.display='none',2500);
+}
+
+function buildClearDrop(){
+  const sel=document.getElementById('clear-player');
+  if(!sel)return;
+  const cur=sel.value;
+  const r=parseInt(document.getElementById('clear-round')?.value)||1;
+  sel.innerHTML='<option value="">Select player...</option>';
+  if(r===3){
+    r3Groups().forEach(g=>{
+      const ob=document.createElement('option');ob.value=g.beetsKey;
+      ob.textContent='🟢 '+g.beetsLabel+' ('+g.teeTime+')';sel.appendChild(ob);
+      const oc=document.createElement('option');oc.value=g.commonsKey;
+      oc.textContent='🔵 '+g.commonsLabel+' ('+g.teeTime+')';sel.appendChild(oc);
+    });
+  }else{
+    [...BEETS,...COMMONS].forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n+' (Hcp '+HCP[n]+')';sel.appendChild(o);});
+  }
+  if(cur)sel.value=cur;
+}
+
+let clearAllMode=false;
+let clearEverythingMode=false;
+
+function clearScores(){
+  const pn=document.getElementById('clear-player').value;
+  if(!pn){return;}
+  const r=parseInt(document.getElementById('clear-round').value);
+  const rNames=['R1 · Swampfire','R2 · Monarch','R3 · Reflections','R4 · Fountains'];
+  clearAllMode=false;
+  document.getElementById('clear-confirm-msg').textContent='Clear '+pn+"'s scores for "+rNames[r-1]+'? This cannot be undone.';
+  document.getElementById('clear-confirm').style.display='block';
+  document.getElementById('clearflash').style.display='none';
+}
+
+function clearAll(){
+  const r=parseInt(document.getElementById('clear-round').value);
+  const rNames=['R1 · Swampfire','R2 · Monarch','R3 · Reflections','R4 · Fountains'];
+  clearAllMode=true;
+  document.getElementById('clear-confirm-msg').textContent='Clear ALL players scores for '+rNames[r-1]+'? This cannot be undone.';
+  document.getElementById('clear-confirm').style.display='block';
+  document.getElementById('clearflash').style.display='none';
+}
+
+async function executeClear(){
+  document.getElementById('clear-confirm').style.display='none';
+  if(clearEverythingMode){
+    clearEverythingMode=false;clearAllMode=false;
+    const allPlayers=[...BEETS,...COMMONS];
+    const groups=r3Groups();
+    const r3keys=new Set(groups.flatMap(g=>[g.beetsKey,g.commonsKey]));
+    for(const pn of allPlayers){
+      SCORES[pn]={};
+      if(sb)await sb.from('omega_scores').delete().eq('player',pn);
+    }
+    for(const key of r3keys){
+      SCORES[key]={};
+      if(sb)await sb.from('omega_scores').delete().eq('player',key);
+    }
+    refreshAll();loadPlayerScores();
+    const f=document.getElementById('clearflash');f.style.display='block';setTimeout(()=>f.style.display='none',2500);
+    return;
+  }
+  const r=parseInt(document.getElementById('clear-round').value);
+  const allPlayers=clearAllMode?[...BEETS,...COMMONS]:[document.getElementById('clear-player').value];
+  // For R3 scramble, resolve player names to their group keys
+  const keysToDelete=new Set();
+  if(r===3){
+    const groups=r3Groups();
+    for(const pn of allPlayers){
+      if(!pn)continue;
+      const g=groups.find(g=>g.beets.includes(pn)||g.commons.includes(pn));
+      if(g){
+        keysToDelete.add(g.beets.includes(pn)?g.beetsKey:g.commonsKey);
+      }else{
+        keysToDelete.add(pn);
+      }
+    }
+  }else{
+    allPlayers.forEach(pn=>{if(pn)keysToDelete.add(pn);});
+  }
+  for(const key of keysToDelete){
+    if(SCORES[key])delete SCORES[key][r];
+    if(sb)await sb.from('omega_scores').delete().eq('player',key).eq('round',r);
+  }
+  refreshAll();
+  loadPlayerScores();
+  const f=document.getElementById('clearflash');f.style.display='block';setTimeout(()=>f.style.display='none',2500);
+}
+
+async function clearEverything(){
+  document.getElementById('clear-confirm-msg').textContent='Clear ALL scores for ALL rounds? This cannot be undone.';
+  clearAllMode=true;
+  clearEverythingMode=true;
+  document.getElementById('clear-confirm').style.display='block';
+  document.getElementById('clearflash').style.display='none';
+}
+
+// Sign scorecard / round lock
+function updateSignStatus(){
+  const r=parseInt(document.getElementById('sign-round')?.value);
+  if(!r)return;
+  const locked=LOCKED_ROUNDS[r];
+  const statusEl=document.getElementById('sign-status');
+  const signBtn=document.getElementById('btn-sign');
+  const openBtn=document.getElementById('btn-open-round');
+  if(statusEl)statusEl.textContent=locked?'🔒 This round is currently locked.':'🔓 This round is open for score entry.';
+  if(signBtn)signBtn.style.opacity=locked?'0.4':'1';
+  if(openBtn)openBtn.style.opacity=locked?'1':'0.4';
+}
+
+function signScorecard(){
+  const r=parseInt(document.getElementById('sign-round').value);
+  if(LOCKED_ROUNDS[r])return;
+  const roundLabels={1:'R1 · Fri · Swampfire',2:'R2 · Sat AM · Monarch',3:'R3 · Sat PM · Reflections',4:'R4 · Sun · Fountains'};
+  const msg=document.getElementById('sign-confirm-msg');
+  const box=document.getElementById('sign-confirm');
+  if(msg)msg.textContent=`Sign and lock ${roundLabels[r]}? This will freeze all scores and snapshot handicaps. This cannot be undone without admin access.`;
+  if(box)box.style.display='block';
+}
+
+async function confirmSign(){
+  const r=parseInt(document.getElementById('sign-round').value);
+  if(LOCKED_ROUNDS[r])return;
+  document.getElementById('sign-confirm').style.display='none';
+  // Snapshot current handicaps for all players before locking this round
+  const allPlayers=[...BEETS,...COMMONS];
+  for(const p of allPlayers){
+    if(!HCP_HISTORY[p])HCP_HISTORY[p]={};
+    HCP_HISTORY[p][r]=HCP[p];
+    await pushHcpHistory(p,r,HCP[p]);
+  }
+  LOCKED_ROUNDS[r]=true;
+  await pushLock(r,true);
+  refreshAll();
+  updateSignStatus();
+  const f=document.getElementById('signflash');f.textContent='🔒 Round locked!';f.style.color='var(--green-mid)';f.style.display='block';setTimeout(()=>f.style.display='none',2500);
+}
+
+async function openRound(){
+  const r=parseInt(document.getElementById('sign-round').value);
+  if(!LOCKED_ROUNDS[r])return;
+  LOCKED_ROUNDS[r]=false;
+  await pushLock(r,false);
+  refreshAll();
+  updateSignStatus();
+  const f=document.getElementById('signflash');f.textContent='🔓 Round unlocked!';f.style.color='var(--amber)';f.style.display='block';setTimeout(()=>f.style.display='none',2500);
+}
+
+// Scores PIN logic
+let _pinEntry='';
+function pinPress(d){
+  if(_pinEntry.length>=4)return;
+  _pinEntry+=d;
+  updatePinDots();
+  if(_pinEntry.length===4)setTimeout(checkPin,150);
+}
+function pinBack(){if(_pinEntry.length>0){_pinEntry=_pinEntry.slice(0,-1);updatePinDots();}}
+function pinClear(){_pinEntry='';updatePinDots();}
+function updatePinDots(){
+  for(let i=0;i<4;i++){
+    const d=document.getElementById('pd'+i);
+    if(d)d.style.background=i<_pinEntry.length?'var(--green-mid)':'transparent';
+  }
+}
+function checkPin(){
+  if(!SCORES_PIN||_pinEntry===SCORES_PIN){
+    SCORES_UNLOCKED=true;
+    document.getElementById('scores-lock').style.display='none';
+    document.getElementById('scores-content').style.display='block';
+    _pinEntry='';updatePinDots();
+    document.getElementById('pin-err').style.display='none';
+  }else{
+    document.getElementById('pin-err').style.display='block';
+    _pinEntry='';updatePinDots();
+  }
+}
+function updatePinDisplay(){
+  const el=document.getElementById('pin-current');
+  if(el)el.textContent=SCORES_PIN?`Active PIN: ${'●'.repeat(4)} (set)`:'No PIN set — score entry is open to all.';
+}
+function showScoresPage(){
+  if(!SCORES_PIN||SCORES_UNLOCKED){
+    document.getElementById('scores-lock').style.display='none';
+    document.getElementById('scores-content').style.display='block';
+  }else{
+    SCORES_UNLOCKED=false;
+    _pinEntry='';updatePinDots();
+    document.getElementById('pin-err').style.display='none';
+    document.getElementById('scores-lock').style.display='block';
+    document.getElementById('scores-content').style.display='none';
+  }
+}
+
+async function clearPair(round){
+  PAIRINGS[round]=[];
+  await pushPairings(round,[]);
+  buildPairEd(round);
+  renderSched();
+  if(curMatchRound===round)renderMatches();
+  const f=document.getElementById('r'+round+'clrflash');
+  if(f){f.style.display='block';setTimeout(()=>f.style.display='none',2500);}
+}
+
+function refreshAll(){updatePinDisplay();renderDashboard();renderMatchTabs();renderMatches();renderSched();renderPlayers();buildPlayerDrop();buildClearDrop();updateScoreLockState();updateSignStatus();}
+
+// Dashboard
+function renderDashboard(){
+  const rNames=['R1 · Swampfire','R2 · Monarch','R3 · Reflections','R4 · Fountains'];
+  const rSubs=['Fri · Stableford','Sat AM · Best Ball','Sat PM · Scramble','Sun · Singles'];
+
+  // R1: 1pt per group win, 0.5 each for tie (based on delta comparison)
+  // Counts completed matches only for official pts; in-progress shown as partial
+  function r1MatchPts(){
+    let bP=0,cP=0;
+    const _r1p=(PAIRINGS[1]&&PAIRINGS[1].length)?PAIRINGS[1].map(p=>({teeTime:p.teeTime,beets:(p.beets||[]).filter(n=>n&&n!=='–'),commons:(p.commons||[]).filter(n=>n&&n!=='–')})).filter(p=>p.beets.length||p.commons.length):R1;
+    _r1p.forEach(pair=>{
+      const bN=pair.beets,cN=pair.commons;
+      if(!bN.length&&!cN.length)return;
+      const bP_=bN.reduce((s,n)=>s+sfPts(n,1),0),cP_=cN.reduce((s,n)=>s+sfPts(n,1),0);
+      const bNd=bN.reduce((s,n)=>s+ptsNeeded(n,0),0),cNd=cN.reduce((s,n)=>s+ptsNeeded(n,0),0);
+      const bD=bNd-bP_,cD=cNd-cP_;
+      const allDone=[...bN,...cN].every(n=>hPlayed(n,1)===18);
+      const anyStarted=[...bN,...cN].some(n=>hPlayed(n,1)>0);
+      if(!anyStarted)return;
+      if(allDone){
+        if(bD<cD){bP+=1;}else if(cD<bD){cP+=1;}else{bP+=0.5;cP+=0.5;}
+      } else {
+        // In progress: award fractional based on current delta
+        if(bD<cD){bP+=0.5;}else if(cD<bD){cP+=0.5;}
+      }
+    });
+    return{b:bP,c:cP};
+  }
+
+  // R2: 1pt per group win, 0.5 for halved (best ball)
+  function r2MatchPts(){
+    const ps=PAIRINGS[2];
+    if(!ps||!ps.length)return{b:0,c:0};
+    let bP=0,cP=0;
+    ps.forEach(pair=>{
+      const bN=(pair.beets||[]).filter(n=>n&&n!=='–');
+      const cN=(pair.commons||[]).filter(n=>n&&n!=='–');
+      if(!bN.length||!cN.length)return;
+      const s=bbStat(bN,cN,2);
+      if(s.th===0)return;
+      if(s.th>=18){
+        if(s.up==='beets')bP+=1;else if(s.up==='commons')cP+=1;else{bP+=0.5;cP+=0.5;}
+      } else {
+        if(s.up==='beets')bP+=0.5;else if(s.up==='commons')cP+=0.5;
+      }
+    });
+    return{b:bP,c:cP};
+  }
+
+  // R3: scramble — compare group keys hole by hole
+  function r3MatchPts(){
+    const groups=r3Groups();
+    if(!groups.length)return{b:0,c:0};
+    let bP=0,cP=0;
+    groups.forEach(g=>{
+      const bHoles=getH(g.beetsKey,3);
+      const cHoles=getH(g.commonsKey,3);
+      let bW=0,cW=0,th=0;
+      for(let h=0;h<18;h++){
+        if(bHoles[h]>0&&cHoles[h]>0){
+          th++;
+          if(bHoles[h]<cHoles[h])bW++;
+          else if(cHoles[h]<bHoles[h])cW++;
+        }
+      }
+      if(th<18)return;
+      const diff=bW-cW;
+      if(diff>0)bP+=1;else if(diff<0)cP+=1;else{bP+=0.5;cP+=0.5;}
+    });
+    return{b:bP,c:cP};
+  }
+
+  // R4: 1pt per singles match win, 0.5 for halved
+  function r4MatchPts(){
+    const gs=PAIRINGS[4];
+    if(!gs||!gs.length)return{b:0,c:0};
+    let bP=0,cP=0;
+    gs.forEach(g=>(g.matches||[]).forEach(m=>{
+      if(!m.beets||!m.commons||m.beets==='–'||m.commons==='–')return;
+      const s=mpStat(getH(m.beets,4),getH(m.commons,4),Math.round(cHcp(m.beets,3)),Math.round(cHcp(m.commons,3)));
+      if(s.th===0)return;
+      if(s.th>=18){
+        if(s.up==='beets')bP+=1;else if(s.up==='commons')cP+=1;else{bP+=0.5;cP+=0.5;}
+      } else {
+        if(s.up==='beets')bP+=0.5;else if(s.up==='commons')cP+=0.5;
+      }
+    }));
+    return{b:bP,c:cP};
+  }
+
+  const r1=r1MatchPts(),r2=r2MatchPts(),r3=r3MatchPts(),r4=r4MatchPts();
+  const rounds=[
+    {b:r1.b,c:r1.c,label:'pts'},
+    {b:r2.b,c:r2.c,label:'pts'},
+    {b:r3.b,c:r3.c,label:'pts'},
+    {b:r4.b,c:r4.c,label:'pts'},
+  ];
+
+  let totalB=0,totalC=0;
+  rounds.forEach(r=>{totalB+=r.b;totalC+=r.c;});
+
+  // Rounds done = signed/locked rounds only
+  let roundsDone=0;
+  for(let r=1;r<=4;r++){
+    if(LOCKED_ROUNDS[r])roundsDone++;
+  }
+
+  // Update tiles
+  const leader=totalB>totalC?'Beets':totalC>totalB?'Commons':'Tied';
+  const leaderEl=document.getElementById('dash-leader');
+  const leaderSubEl=document.getElementById('dash-leader-sub');
+  if(leaderEl)leaderEl.textContent=leader;
+  const fmtPt=v=>v===Math.floor(v)?v:v.toFixed(1);
+  if(leaderSubEl)leaderSubEl.textContent=totalB===totalC?'All square':`${fmtPt(Math.abs(totalB-totalC))} pt${Math.abs(totalB-totalC)===1?'':'s'} ahead`;
+
+  const rdEl=document.getElementById('dash-rounds-done');
+  if(rdEl)rdEl.innerHTML=`${roundsDone}<span style="font-size:14px;color:var(--text-secondary);">/4</span>`;
+  const rdSub=document.getElementById('dash-rounds-sub');
+  if(rdSub)rdSub.textContent=roundsDone===4?'Tournament complete':roundsDone===0?'R1 up next':`R${roundsDone+1} up next`;
+
+  const tpEl=document.getElementById('dash-total-pts');
+  if(tpEl)tpEl.textContent=totalB+totalC;
+
+  const bPts=document.getElementById('dash-beets-pts');
+  const cPts=document.getElementById('dash-commons-pts');
+  if(bPts)bPts.textContent=fmtPt(totalB);
+  if(cPts)cPts.textContent=fmtPt(totalC);
+  // Cup sub-lines for Live standings
+  const liveBSub=document.getElementById('live-beets-sub');
+  const liveCSub=document.getElementById('live-commons-sub');
+  if(liveBSub){
+    const needed=fmtPt(Math.max(0,10.5-totalB));
+    liveBSub.textContent=totalB>10?'👑 Lead to take the Cup':`${needed} pts to take the Cup`;
+    liveBSub.style.color=totalB>10?'var(--amber)':'var(--text)';
+  }
+  if(liveCSub){
+    const needed=fmtPt(Math.max(0,10-totalC));
+    liveCSub.textContent=totalC>=10?'🏆 On pace to retain the Cup':`${needed} pts to retain the Cup`;
+    liveCSub.style.color=totalC>=10?'var(--amber)':'var(--text)';
+  }
+
+  // Live round rows
+  const rowsEl=document.getElementById('dash-round-rows');
+  if(rowsEl){
+    rowsEl.innerHTML=rounds.map((r,i)=>{
+      const ri=i+1;
+      const hasData=r.b>0||r.c>0;
+      const locked=LOCKED_ROUNDS[ri];
+      const badge=locked?'<span class="badge bg">✓ Signed</span>':'<span class="badge bgr">Soon</span>';
+      const fmt=v=>v===Math.floor(v)?v:v.toFixed(1);
+      return`<div class="rrow"><div class="rinfo"><div class="rname">${rNames[i]}</div><div class="rsub">${rSubs[i]}</div></div><div class="rscores"><div class="rscore sg">${hasData?fmt(r.b):'–'}</div><div style="font-size:10px;color:var(--text-hint);">vs</div><div class="rscore sb">${hasData?fmt(r.c):'–'}</div>${badge}</div></div>`;
+    }).join('');
+  }
+
+  // Official standings — only signed/locked rounds count
+  const fmt=v=>v===Math.floor(v)?v:v.toFixed(1);
+  const officialRounds=rounds.filter((_,i)=>LOCKED_ROUNDS[i+1]);
+  let offB=0,offC=0;
+  officialRounds.forEach(r=>{offB+=r.b;offC+=r.c;});
+  const signedCount=officialRounds.length;
+
+  // Champion tile — only show when all 4 rounds are signed
+  const champTile=document.getElementById('champion-tile');
+  const champName=document.getElementById('champion-name');
+  const champScore=document.getElementById('champion-score');
+  if(champTile){
+    if(signedCount===4){
+      champTile.style.display='block';
+      const fmt=v=>v===Math.floor(v)?v:v.toFixed(1);
+      const tied=offB===offC;
+      const winner=offB>offC?'The Beets':tied?'The Commons':'The Commons';
+      const isTied=tied;
+      if(champName)champName.textContent=winner;
+      if(champScore)champScore.textContent=isTied?`${fmt(offB)} – ${fmt(offC)} · Tie — Reigning Champions retain 🏆`:`${fmt(Math.max(offB,offC))} – ${fmt(Math.min(offB,offC))} · ${fmt(Math.abs(offB-offC))} pt${Math.abs(offB-offC)===1?'':'s'} victory`;
+      // Gold border for extra flair
+      champTile.style.border='1px solid var(--amber)';
+      champTile.style.background='linear-gradient(135deg, var(--bg-card) 0%, var(--amber-light) 100%)';
+    } else {
+      champTile.style.display='none';
+    }
+  }
+
+  // MVP tile — only when all 4 rounds signed
+  const mvpNameEl=document.getElementById('mvp-name');
+  const mvpSubEl=document.getElementById('mvp-sub');
+  if(mvpNameEl){
+    if(signedCount===4){
+      // Winning team
+      const winTeam=offB>offC?BEETS:offC>offB?COMMONS:COMMONS; // Commons retain on tie
+      // R1: individual stableford pts
+      // R2: best ball — credit each player who had the best score on a winning hole
+      // R3: scramble — shared credit, split evenly among team
+      // Score each player: R1 pts + R2 hole wins + R3 shared pts
+      function playerMVPScore(name){
+        // R1 — 2-man stableford pairs. Win=1pt, Tie=0.5pt
+        let r1=0;
+        const _r1p=(PAIRINGS[1]&&PAIRINGS[1].length)?PAIRINGS[1].map(p=>({teeTime:p.teeTime,beets:(p.beets||[]).filter(n=>n&&n!=='–'),commons:(p.commons||[]).filter(n=>n&&n!=='–')})):R1;
+    _r1p.forEach(pair=>{
+          const bN=pair.beets,cN=pair.commons;
+          const inBeets=bN.includes(name),inCommons=cN.includes(name);
+          if(!inBeets&&!inCommons)return;
+          const allDone=[...bN,...cN].every(n=>hPlayed(n,1)===18);
+          if(!allDone)return;
+          const bNd=bN.reduce((s,n)=>s+ptsNeeded(n,0),0),cNd=cN.reduce((s,n)=>s+ptsNeeded(n,0),0);
+          const bD=bNd-bN.reduce((s,n)=>s+sfPts(n,1),0),cD=cNd-cN.reduce((s,n)=>s+sfPts(n,1),0);
+          const myD=inBeets?bD:cD,oppD=inBeets?cD:bD;
+          if(myD<oppD)r1+=1;else if(myD===oppD)r1+=0.5;
+        });
+        // R2 — best ball pairs. Win=1pt, Tie=0.5pt
+        let r2=0;
+        const r2ps=PAIRINGS[2];
+        if(r2ps){r2ps.forEach(pair=>{
+          const bN=(pair.beets||[]).filter(n=>n&&n!=='–');
+          const cN=(pair.commons||[]).filter(n=>n&&n!=='–');
+          const isBeets=bN.includes(name),isCommons=cN.includes(name);
+          if(!isBeets&&!isCommons)return;
+          const s=bbStat(bN,cN,2);
+          if(s.th<18)return;
+          if(s.up==='tied')r2+=0.5;
+          else if(s.up==='beets'&&isBeets)r2+=1;
+          else if(s.up==='commons'&&isCommons)r2+=1;
+        });}
+        // R4 — singles match play. Win=1pt, Tie=0.5pt
+        let r4=0;
+        const g4=PAIRINGS[4];
+        if(g4){g4.forEach(g=>(g.matches||[]).forEach(m=>{
+          if(!m.beets||!m.commons||m.beets==='–'||m.commons==='–')return;
+          if(m.beets!==name&&m.commons!==name)return;
+          const sm=groupStrokes([m.beets,m.commons],4);
+          const ms=mpNetStat([m.beets],[m.commons],4,sm);
+          if(ms.th<18)return;
+          const isBeets=m.beets===name;
+          if(ms.up==='tied')r4+=0.5;
+          else if(ms.up==='beets'&&isBeets)r4+=1;
+          else if(ms.up==='commons'&&!isBeets)r4+=1;
+        }));}
+        return{r1,r2,r4,total:r1+r2+r4};
+      }
+      // Net avg score tiebreaker: avg gross per hole R1+R2+R4
+      function netAvg(name){
+        let total=0,holes=0;
+        [1,2,4].forEach(r=>{const h=getH(name,r);h.forEach(s=>{if(s>0){total+=s;holes++;}});});
+        return holes>0?total/holes:999;
+      }
+      const scores=winTeam.map(n=>({name:n,...playerMVPScore(n),avg:netAvg(n)}));
+      scores.sort((a,b)=>b.total-a.total||a.avg-b.avg);
+      const mvp=scores[0];
+      mvpNameEl.textContent=mvp.name;
+      mvpNameEl.style.color='var(--amber)';
+      const fmtP=v=>v===Math.floor(v)?String(v):v.toFixed(1);const mvpAvgNet=(()=>{const nets=[1,2,4].map(r=>{const holes=getH(mvp.name,r);const gross=holes.reduce((s,v)=>s+(v||0),0);const played=holes.filter(s=>s>0).length;if(!played)return null;const sm=r===2||r===4?groupStrokes(r===2?(()=>{const p=(PAIRINGS[2]||[]).find(p=>(p.beets||[]).includes(mvp.name)||(p.commons||[]).includes(mvp.name));return p?[...(p.beets||[]),...(p.commons||[])].filter(n=>n&&n!=='–'):[];})():(()=>{let ns=[];(PAIRINGS[4]||[]).forEach(g=>(g.matches||[]).forEach(m=>{if(m.beets===mvp.name||m.commons===mvp.name)ns=[m.beets,m.commons];}));return ns.filter(n=>n&&n!=='–');})(),r):null;const strokes=sm?sm[mvp.name]||0:0;const strokeHoles=sm?getStrokeHoles(strokes,r):Array(18).fill(false);return gross-strokeHoles.reduce((t,s,h)=>t+(holes[h]>0?s:0),0);}).filter(v=>v!==null);return nets.length?nets.reduce((s,v)=>s+v,0)/nets.length:0;})();if(mvpSubEl)mvpSubEl.textContent=`${fmtP(mvp.total)} team pts · avg net ${mvpAvgNet.toFixed(1)}`;
+    } else {
+      mvpNameEl.textContent='–';
+      mvpNameEl.style.color='var(--text-hint)';
+      if(mvpSubEl)mvpSubEl.textContent='Awarded after all rounds signed';
+    }
+  }
+
+  // Biggest Bust tile — only when all 4 rounds signed
+  const bustNameEl=document.getElementById('bust-name');
+  const bustSubEl=document.getElementById('bust-sub');
+  if(bustNameEl){
+    if(signedCount===4){
+      // Losing team (opposite of winner, Commons retain on tie)
+      const loseTeam=offB>offC?COMMONS:BEETS;
+      // Reuse playerMVPScore logic — least pts = bust
+      function playerBustScore(name){
+        let pts=0;
+        const _r1p=(PAIRINGS[1]&&PAIRINGS[1].length)?PAIRINGS[1].map(p=>({teeTime:p.teeTime,beets:(p.beets||[]).filter(n=>n&&n!=='–'),commons:(p.commons||[]).filter(n=>n&&n!=='–')})):R1;
+    _r1p.forEach(pair=>{
+          const bN=pair.beets,cN=pair.commons;
+          const inBeets=bN.includes(name),inCommons=cN.includes(name);
+          if(!inBeets&&!inCommons)return;
+          const allDone=[...bN,...cN].every(n=>hPlayed(n,1)===18);
+          if(!allDone)return;
+          const bNd=bN.reduce((s,n)=>s+ptsNeeded(n,0),0),cNd=cN.reduce((s,n)=>s+ptsNeeded(n,0),0);
+          const bD=bNd-bN.reduce((s,n)=>s+sfPts(n,1),0),cD=cNd-cN.reduce((s,n)=>s+sfPts(n,1),0);
+          const myD=inBeets?bD:cD,oppD=inBeets?cD:bD;
+          if(myD<oppD)pts+=1;else if(myD===oppD)pts+=0.5;
+        });
+        const r2ps=PAIRINGS[2];
+        if(r2ps){r2ps.forEach(pair=>{
+          const bN=(pair.beets||[]).filter(n=>n&&n!=='–');
+          const cN=(pair.commons||[]).filter(n=>n&&n!=='–');
+          const isBeets=bN.includes(name),isCommons=cN.includes(name);
+          if(!isBeets&&!isCommons)return;
+          const s=bbStat(bN,cN,2);
+          if(s.th<18)return;
+          if(s.up==='tied')pts+=0.5;
+          else if(s.up==='beets'&&isBeets)pts+=1;
+          else if(s.up==='commons'&&isCommons)pts+=1;
+        });}
+        const g4=PAIRINGS[4];
+        if(g4){g4.forEach(g=>(g.matches||[]).forEach(m=>{
+          if(!m.beets||!m.commons||m.beets==='–'||m.commons==='–')return;
+          if(m.beets!==name&&m.commons!==name)return;
+          const sm=groupStrokes([m.beets,m.commons],4);
+          const ms=mpNetStat([m.beets],[m.commons],4,sm);
+          if(ms.th<18)return;
+          const isBeets=m.beets===name;
+          if(ms.up==='tied')pts+=0.5;
+          else if(ms.up==='beets'&&isBeets)pts+=1;
+          else if(ms.up==='commons'&&!isBeets)pts+=1;
+        }));}
+        return pts;
+      }
+      // Tiebreaker: highest avg net score — reuse same calc as players tab
+      function bustAvgNet(name){
+        const rounds=[1,2,4];
+        const nets=rounds.map(r=>{
+          const holes=getH(name,r);
+          const gross=holes.reduce((s,v)=>s+(v||0),0);
+          const played=holes.filter(s=>s>0).length;
+          if(!played)return null;
+          const sm=r===2||r===4?groupStrokes(
+            r===2
+              ?(()=>{const p=(PAIRINGS[2]||[]).find(p=>(p.beets||[]).includes(name)||(p.commons||[]).includes(name));return p?[...(p.beets||[]),...(p.commons||[])].filter(n=>n&&n!=='–'):[];})()
+              :(()=>{let ns=[];(PAIRINGS[4]||[]).forEach(g=>(g.matches||[]).forEach(m=>{if(m.beets===name||m.commons===name)ns=[m.beets,m.commons];}));return ns.filter(n=>n&&n!=='–');})(),
+            r
+          ):null;
+          const strokes=sm?sm[name]||0:0;
+          const strokeHoles=sm?getStrokeHoles(strokes,r):Array(18).fill(false);
+          const net=gross-strokeHoles.reduce((t,s,h)=>t+(holes[h]>0?s:0),0);
+          return net;
+        }).filter(v=>v!==null);
+        return nets.length?nets.reduce((s,v)=>s+v,0)/nets.length:0;
+      }
+      const fmtP=v=>v===Math.floor(v)?String(v):v.toFixed(1);
+      const bustScores=loseTeam.map(n=>({name:n,pts:playerBustScore(n),avg:bustAvgNet(n)}));
+      bustScores.sort((a,b)=>a.pts-b.pts||b.avg-a.avg);
+      const bust=bustScores[0];
+      bustNameEl.textContent=bust.name;
+      bustNameEl.style.color='var(--red)';
+      if(bustSubEl)bustSubEl.textContent=`${fmtP(bust.pts)} team pts · avg net ${bust.avg.toFixed(1)}`;
+    } else {
+      bustNameEl.textContent='–';
+      bustNameEl.style.color='var(--text-hint)';
+      if(bustSubEl)bustSubEl.textContent='Awarded after all rounds signed';
+    }
+  }
+
+  const offBEl=document.getElementById('dash-beets-official');
+  const offCEl=document.getElementById('dash-commons-official');
+  const offBadge=document.getElementById('official-badge');
+  const offRows=document.getElementById('dash-official-rows');
+
+  if(offBEl)offBEl.textContent=signedCount>0?fmt(offB):'–';
+  if(offCEl)offCEl.textContent=signedCount>0?fmt(offC):'–';
+  const offBSub=document.getElementById('off-beets-sub');
+  const offCSub=document.getElementById('off-commons-sub');
+  if(offBSub){
+    const bRef=signedCount>0?offB:totalB;
+    const needed=fmt(Math.max(0,10.5-bRef));
+    offBSub.textContent=bRef>10?'👑 Lead to take the Cup':`${needed} pts to take the Cup`;
+    offBSub.style.color=bRef>10?'var(--amber)':'var(--text)';
+  }
+  if(offCSub){
+    const cRef=signedCount>0?offC:totalC;
+    const needed=fmt(Math.max(0,10-cRef));
+    offCSub.textContent=cRef>=10?'🏆 On pace to retain the Cup':`${needed} pts to retain the Cup`;
+    offCSub.style.color=cRef>=10?'var(--amber)':'var(--text)';
+  }
+
+  if(offBadge){
+    if(signedCount===0){offBadge.textContent='No signed rounds';offBadge.className='badge bgr';}
+    else if(signedCount===4){offBadge.textContent='✓ Final';offBadge.className='badge bg';}
+    else{offBadge.textContent=`${signedCount}/4 signed`;offBadge.className='badge ba';}
+  }
+
+  if(offRows){
+    if(signedCount===0){
+      offRows.innerHTML='<div style="font-size:12px;color:var(--text-hint);font-family:DM Mono,monospace;padding:8px 0;">No rounds signed yet. Sign a round in Admin to lock in scores.</div>';
+    } else {
+      offRows.innerHTML=rounds.map((r,i)=>{
+        const ri=i+1;
+        const locked=LOCKED_ROUNDS[ri];
+        if(!locked)return`<div class="rrow"><div class="rinfo"><div class="rname">${rNames[i]}</div><div class="rsub">${rSubs[i]}</div></div><div class="rscores"><div style="font-size:11px;color:var(--text-hint);font-family:DM Mono,monospace;">Not signed</div></div></div>`;
+        const hasData=r.b>0||r.c>0;
+        return`<div class="rrow"><div class="rinfo"><div class="rname">${rNames[i]}</div><div class="rsub">${rSubs[i]}</div></div><div class="rscores"><div class="rscore sg">${hasData?fmt(r.b):'–'}</div><div style="font-size:10px;color:var(--text-hint);">vs</div><div class="rscore sb">${hasData?fmt(r.c):'–'}</div><span class="badge bgr">🔒</span></div></div>`;
+      }).join('');
+    }
+  }
+}
+
+function updateDashLockBadges(){
+  [1,2,3,4].forEach(r=>{
+    const badge=document.getElementById('dash-badge-'+r);
+    if(!badge)return;
+    if(LOCKED_ROUNDS[r]){
+      badge.textContent='🔒 Locked';
+      badge.className='badge bgr';
+    } else {
+      const defaults={1:{text:'Today',cls:'ba'},2:{text:'Soon',cls:'bgr'},3:{text:'Soon',cls:'bgr'},4:{text:'Soon',cls:'bgr'}};
+      badge.textContent=defaults[r].text;
+      badge.className='badge '+defaults[r].cls;
+    }
+  });
+}
+
+function updateScoreLockState(){
+  const r=parseInt(document.getElementById('entry-round')?.value);
+  if(!r)return;
+  const locked=LOCKED_ROUNDS[r];
+  const inputs=document.querySelectorAll('#front9 input, #back9 input');
+  inputs.forEach(inp=>{inp.disabled=locked;inp.style.background=locked?'var(--bg-secondary)':'';inp.style.color=locked?'var(--text-hint)':'';});
+  const btn=document.getElementById('btn-save');
+  if(btn){btn.disabled=locked;btn.style.opacity=locked?'0.4':'1';}
+  const banner=document.getElementById('hbanner');
+  if(banner&&locked){banner.style.display='block';banner.innerHTML='🔒 This round is locked. Scores cannot be edited.';}
+}
+
+// Wire up all events after DOM ready
+document.addEventListener('DOMContentLoaded',function(){
+  // Nav buttons
+  document.getElementById('nav-dash').addEventListener('click',function(){showPage('dash');});
+  document.getElementById('nav-matches').addEventListener('click',function(){showPage('matches');});
+  document.getElementById('nav-scores').addEventListener('click',function(){showPage('scores');showScoresPage();});
+  document.getElementById('nav-players').addEventListener('click',function(){showPage('players');});
+  document.getElementById('nav-schedule').addEventListener('click',function(){showPage('schedule');});
+  document.getElementById('nav-rules').addEventListener('click',function(){showPage('rules');});
+  document.getElementById('nav-admin').addEventListener('click',function(){showPage('admin');});
+
+  // Match tabs rendered dynamically via renderMatchTabs()
+
+  // Score entry
+  document.getElementById('entry-round').addEventListener('change',function(){updateForm();updateScoreLockState();});
+  document.getElementById('entry-player').addEventListener('change',loadPlayerScores);
+  document.getElementById('btn-save').addEventListener('click',saveScore);
+
+  // Admin
+  document.getElementById('btn-unlock').addEventListener('click',checkPw);
+  document.getElementById('adminpw').addEventListener('keydown',function(e){if(e.key==='Enter')checkPw();});
+  document.getElementById('btn-lock').addEventListener('click',lockAdmin);
+  document.getElementById('btn-r1').addEventListener('click',function(){savePair(1);});
+  document.getElementById('btn-r2').addEventListener('click',function(){savePair(2);});
+  document.getElementById('btn-r3').addEventListener('click',function(){savePair(3);});
+  document.getElementById('btn-r4').addEventListener('click',function(){savePair(4);});
+  document.getElementById('btn-clrpair1').addEventListener('click',function(){clearPair(1);});
+  document.getElementById('btn-clrpair2').addEventListener('click',function(){clearPair(2);});
+  document.getElementById('btn-clrpair3').addEventListener('click',function(){clearPair(3);});
+  document.getElementById('btn-clrpair4').addEventListener('click',function(){clearPair(4);});
+  document.getElementById('btn-hcp').addEventListener('click',saveHcps);
+  document.getElementById('clear-round').addEventListener('change',buildClearDrop);
+  document.getElementById('btn-clear-scores').addEventListener('click',function(){
+    if(!document.getElementById('clear-player').value){document.getElementById('clear-confirm').style.display='none';document.getElementById('clearflash').style.display='none';return;}
+    clearScores();
+  });
+  document.getElementById('btn-clear-all').addEventListener('click',clearAll);
+  document.getElementById('btn-save-cd').addEventListener('click',saveCountdown);
+  document.getElementById('btn-seed-round').addEventListener('click',async function(){
+    const r=parseInt(document.getElementById('seed-round').value);
+    this.disabled=true;this.textContent='Seeding...';
+    await seedRound(r);
+    const f=document.getElementById('seedflash');f.textContent='✓ R'+r+' seeded!';f.style.display='block';setTimeout(()=>f.style.display='none',3000);
+    this.disabled=false;this.textContent='🎲 Seed Round';
+  });
+  document.getElementById('btn-seed-all').addEventListener('click',async function(){
+    this.disabled=true;this.textContent='Seeding...';
+    await seedRandomScores();
+    const f=document.getElementById('seedflash');f.textContent='✓ All rounds seeded!';f.style.display='block';setTimeout(()=>f.style.display='none',3000);
+    this.disabled=false;this.textContent='🎲 Seed All';
+  });
+  document.getElementById('btn-sign').addEventListener('click',signScorecard);
+  document.getElementById('btn-save-pin').addEventListener('click',async function(){
+    const val=document.getElementById('pin-input').value.trim();
+    if(val&&(!/^\d{4}$/.test(val))){alert('PIN must be exactly 4 digits.');return;}
+    SCORES_PIN=val;
+    SCORES_UNLOCKED=false;
+    if(sb)await sb.from('omega_settings').upsert({key:'scores_pin',value:val,updated_at:new Date().toISOString()},{onConflict:'key'});
+    updatePinDisplay();
+    const f=document.getElementById('pinflash');f.textContent='✓ PIN saved!';f.style.color='var(--green-mid)';f.style.display='block';setTimeout(()=>f.style.display='none',2500);
+  });
+  document.getElementById('btn-clear-pin').addEventListener('click',async function(){
+    SCORES_PIN='';SCORES_UNLOCKED=false;
+    document.getElementById('pin-input').value='';
+    if(sb)await sb.from('omega_settings').upsert({key:'scores_pin',value:'',updated_at:new Date().toISOString()},{onConflict:'key'});
+    updatePinDisplay();
+    const f=document.getElementById('pinflash');f.textContent='✓ PIN removed.';f.style.color='var(--amber)';f.style.display='block';setTimeout(()=>f.style.display='none',2500);
+  });
+  document.getElementById('btn-sign-yes').addEventListener('click',confirmSign);
+  document.getElementById('btn-sign-cancel').addEventListener('click',()=>{document.getElementById('sign-confirm').style.display='none';});
+  document.getElementById('btn-open-round').addEventListener('click',openRound);
+  document.getElementById('sign-round').addEventListener('change',updateSignStatus);
+  document.getElementById('btn-clear-everything').addEventListener('click',clearEverything);
+  document.getElementById('btn-clear-yes').addEventListener('click',executeClear);
+  document.getElementById('btn-clear-no').addEventListener('click',function(){document.getElementById('clear-confirm').style.display='none';});
+
+  // Init
+  buildHoles();
+  buildPlayerDrop();
+  updateForm();
+  renderPlayers();
+  renderSched();
+  renderDashboard();
+  renderMatchTabs();
+  renderMatches();
+  startCountdown();
+  initSB();
+});
+
+// Countdown
+let COUNTDOWN_TARGET = new Date('2026-06-12T13:00:00');
+let countdownInterval = null;
+
+function startCountdown(){
+  if(countdownInterval)clearInterval(countdownInterval);
+  countdownInterval=setInterval(tickCountdown, 1000);
+  tickCountdown();
+}
+
+function tickCountdown(){
+  const now=new Date();
+  const diff=COUNTDOWN_TARGET-now;
+  const grid=document.getElementById('countdown-grid');
+  const done=document.getElementById('cd-done');
+  if(diff<=0){
+    if(grid)grid.style.display='none';
+    if(done)done.style.display='block';
+    clearInterval(countdownInterval);
+    return;
+  }
+  if(grid)grid.style.display='grid';
+  if(done)done.style.display='none';
+  const totalSecs=Math.floor(diff/1000);
+  const secs=totalSecs%60;
+  const totalMins=Math.floor(totalSecs/60);
+  const hours=Math.floor(totalMins/60)%24;
+  const totalHours=Math.floor(totalSecs/3600);
+  const totalDays=Math.floor(totalHours/24);
+  const months=Math.floor(totalDays/30.44);
+  const days=totalDays%Math.round(months*30.44||1)%31;
+  // Simpler: just show total days broken into months+days
+  const now2=new Date(now);
+  let m=0,d=0;
+  const target=new Date(COUNTDOWN_TARGET);
+  let y1=now2.getFullYear(),mo1=now2.getMonth(),d1=now2.getDate();
+  let y2=target.getFullYear(),mo2=target.getMonth(),d2=target.getDate();
+  m=(y2-y1)*12+(mo2-mo1);
+  d=d2-d1;
+  if(d<0){m--;const prev=new Date(y2,mo2,0);d+=prev.getDate();}
+  if(m<0){m=0;d=Math.max(0,Math.floor((COUNTDOWN_TARGET-now)/86400000));}
+  const el=id=>document.getElementById(id);
+  const mins=Math.floor(totalMins%60);
+  if(el('cd-months'))el('cd-months').textContent=m;
+  if(el('cd-days'))el('cd-days').textContent=d;
+  if(el('cd-hours'))el('cd-hours').textContent=String(hours).padStart(2,'0');
+  if(el('cd-mins'))el('cd-mins').textContent=String(mins).padStart(2,'0');
+  if(el('cd-secs'))el('cd-secs').textContent=String(secs).padStart(2,'0');
+}
+
+async function saveCountdown(){
+  const dateVal=document.getElementById('cd-date-input')?.value;
+  const timeVal=document.getElementById('cd-time-input')?.value||'13:00';
+  if(!dateVal)return;
+  COUNTDOWN_TARGET=new Date(`${dateVal}T${timeVal}:00`);
+  if(sb)await sb.from('omega_settings').upsert({key:'countdown_target',value:`${dateVal}T${timeVal}:00`,updated_at:new Date().toISOString()},{onConflict:'key'});
+  startCountdown();
+  const f=document.getElementById('cdflash');f.style.display='block';setTimeout(()=>f.style.display='none',2500);
+}
+
+// Manual refresh
+async function refreshData(){
+  const btn=document.getElementById('btn-refresh');
+  const svg=btn?.querySelector('svg');
+  if(btn){btn.disabled=true;btn.style.opacity='0.5';}
+  if(svg)svg.style.animation='spin 0.8s linear infinite';
+  await loadAll();
+  if(btn){btn.disabled=false;btn.style.opacity='1';}
+  if(svg)svg.style.animation='';
+}
+
+// Seed random scores + pairings for testing
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+async function seedRound(round){
+  const allPlayers=[...BEETS,...COMMONS];
+  const PAR_LOCAL=[4,3,5,4,4,3,5,4,4,4,3,5,4,4,3,5,4,4];
+
+  if(round===1||round===2||round===4){
+    // Ensure pairings exist for R2/R4 before seeding scores
+    if((round===2||round===4)&&!(PAIRINGS[round]||[]).length){
+      if(round===2||round===3){
+        for(const r of [2,3]){
+          if(!(PAIRINGS[r]||[]).length){
+            const sB=shuffle(BEETS),sC=shuffle(COMMONS),times=TTIMES[r];
+            const data=times.map((t,i)=>({teeTime:t,beets:[sB[i*2]||'–',sB[i*2+1]||'–'],commons:[sC[i*2]||'–',sC[i*2+1]||'–']}));
+            PAIRINGS[r]=data;await pushPairings(r,data);
+          }
+        }
+      }
+      if(round===4){
+        const sB4=shuffle(BEETS),sC4=shuffle(COMMONS),times4=TTIMES[4];
+        const data4=times4.map((t,i)=>({teeTime:t,matches:[{beets:sB4[i*2]||'–',commons:sC4[i*2]||'–'},{beets:sB4[i*2+1]||'–',commons:sC4[i*2+1]||'–'}]}));
+        PAIRINGS[4]=data4;await pushPairings(4,data4);
+      }
+    }
+    for(const player of allPlayers){
+      const holes=PAR_LOCAL.map(p=>Math.max(1,p+(Math.floor(Math.random()*5)-1)));
+      if(!SCORES[player])SCORES[player]={};
+      SCORES[player][round]=holes;
+      await pushScore(player,round,holes);
+    }
+  }
+
+  if(round===3){
+    // Seed R2/R3 pairings if needed so r3Groups() works
+    for(const r of [2,3]){
+      if(!(PAIRINGS[r]||[]).length){
+        const sB=shuffle(BEETS),sC=shuffle(COMMONS),times=TTIMES[r];
+        const data=times.map((t,i)=>({teeTime:t,beets:[sB[i*2]||'–',sB[i*2+1]||'–'],commons:[sC[i*2]||'–',sC[i*2+1]||'–']}));
+        PAIRINGS[r]=data;await pushPairings(r,data);
+      }
+    }
+    const groups=r3Groups();
+    for(const g of groups){
+      for(const key of [g.beetsKey,g.commonsKey]){
+        const holes=PAR_LOCAL.map(p=>Math.max(1,p+(Math.floor(Math.random()*3)-1)));
+        if(!SCORES[key])SCORES[key]={};
+        SCORES[key][3]=holes;
+        await pushScore(key,3,holes);
+      }
+    }
+  }
+
+  refreshAll();
+}
+
+async function seedRandomScores(){
+  const allPlayers=[...BEETS,...COMMONS];
+  const PAR_LOCAL=[4,3,5,4,4,3,5,4,4,4,3,5,4,4,3,5,4,4];
+
+  // Seed scores for all players rounds 1, 2, 4
+  for(const player of allPlayers){
+    for(let round of [1,2,4]){
+      const holes=PAR_LOCAL.map(p=>Math.max(1,p+(Math.floor(Math.random()*5)-1)));
+      if(!SCORES[player])SCORES[player]={};
+      SCORES[player][round]=holes;
+      await pushScore(player,round,holes);
+    }
+  }
+
+  // Seed R2 & R3 pairings first so r3Groups() has data
+  for(const round of [2,3]){
+    const sB=shuffle(BEETS);
+    const sC=shuffle(COMMONS);
+    const times=TTIMES[round];
+    const data=times.map((t,i)=>({
+      teeTime:t,
+      beets:[sB[i*2]||'–',sB[i*2+1]||'–'],
+      commons:[sC[i*2]||'–',sC[i*2+1]||'–']
+    }));
+    PAIRINGS[round]=data;
+    await pushPairings(round,data);
+  }
+
+  // Seed R4 pairings
+  const sB4=shuffle(BEETS);
+  const sC4=shuffle(COMMONS);
+  const times4=TTIMES[4];
+  const data4=times4.map((t,i)=>({
+    teeTime:t,
+    matches:[
+      {beets:sB4[i*2]||'–',commons:sC4[i*2]||'–'},
+      {beets:sB4[i*2+1]||'–',commons:sC4[i*2+1]||'–'}
+    ]
+  }));
+  PAIRINGS[4]=data4;
+  await pushPairings(4,data4);
+
+  // Now seed R3 scramble scores — pairings are set so r3Groups() works
+  const groups=r3Groups();
+  for(const g of groups){
+    for(const key of [g.beetsKey,g.commonsKey]){
+      const holes=PAR_LOCAL.map(p=>Math.max(1,p+(Math.floor(Math.random()*3)-1)));
+      if(!SCORES[key])SCORES[key]={};
+      SCORES[key][3]=holes;
+      await pushScore(key,3,holes);
+    }
+  }
+
+  refreshAll();
+}
+
+// Show iOS install banner if on iOS Safari and not already installed
+(function(){
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone === true;
+  const isSafari = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
+  if(isIOS && !isStandalone && isSafari){
+    setTimeout(function(){
+      document.getElementById('ios-banner').style.display='block';
+    }, 2500);
+  }
+})();
+
+</script>
+
+<div id="ios-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#0D1F16;color:#E8F5EE;border-top:1px solid rgba(255,255,255,0.1);padding:12px 16px 16px;z-index:2000;font-family:'DM Sans',sans-serif;font-size:13px;text-align:center;">
+  <div style="font-weight:600;margin-bottom:4px;">Install Omega Open</div>
+  <div style="opacity:.75;font-size:12px;">Tap <strong>Share</strong> then <strong>"Add to Home Screen"</strong> for the best experience</div>
+  <button onclick="document.getElementById('ios-banner').style.display='none'" style="position:absolute;top:10px;right:12px;background:none;border:none;color:#fff;font-size:18px;cursor:pointer;opacity:.6;">✕</button>
+</div>
+</body>
+</html>
