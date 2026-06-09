@@ -20,8 +20,8 @@
 @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;-webkit-tap-highlight-color:transparent;}
 button,select,input{touch-action:manipulation;-webkit-tap-highlight-color:transparent;font-family:'DM Sans',sans-serif;}
-.shell{display:flex;flex-direction:column;min-height:100vh;}
-.hdr{padding:0;padding-top:env(safe-area-inset-top);border-bottom:1px solid var(--border);background:var(--bg-card);position:relative;overflow:hidden;min-height:calc(72px + env(safe-area-inset-top));}
+.shell{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+.hdr{padding:0;padding-top:env(safe-area-inset-top);border-bottom:1px solid var(--border);background:var(--bg-card);position:sticky;top:0;z-index:900;overflow:hidden;min-height:calc(72px + env(safe-area-inset-top));}
 .hdr-title{font-size:12px;font-weight:500;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.08em;font-family:'DM Mono',monospace;}
 .hdr-sub{font-size:19px;font-weight:600;color:var(--text);margin-top:2px;}
 .sync-row{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-hint);margin-top:4px;font-family:'DM Mono',monospace;}
@@ -130,7 +130,7 @@ button,select,input{touch-action:manipulation;-webkit-tap-highlight-color:transp
 .smsel{display:grid;grid-template-columns:1fr 24px 1fr;gap:6px;align-items:center;}
 .smsel select{font-size:16px;padding:7px 6px;border:1px solid var(--border-strong);border-radius:6px;background:var(--bg-card);color:var(--text);width:100%;appearance:none;}
 .smdiv{border:none;border-top:1px dashed var(--border);margin:8px 0;}
-.herow{display:grid;grid-template-columns:1fr 80px 30px;gap:8px;align-items:center;margin-bottom:8px;}
+.herow{display:grid;grid-template-columns:1fr 80px 30px;gap:8px;align-items:center;margin-bottom:8px;}.herow input[type="text"].heinp{font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;text-align:left;}
 .hename{font-size:13px;font-weight:500;}
 .heinp{padding:7px 8px;border:1px solid var(--border-strong);border-radius:6px;background:var(--bg-card);color:var(--text);font-size:13px;font-family:'DM Mono',monospace;text-align:center;width:100%;}
 .heunit{font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;}
@@ -620,9 +620,10 @@ function dc(d){return d<0?'dp':d===0?'dz':'dn';}
 function pcls(u){return u==='beets'?'pb':u==='commons'?'pc':'pt';}
 function mpStat(bH,cH,bS,cS){let bW=0,cW=0,th=0;for(let h=0;h<18;h++){if(bH[h]>0&&cH[h]>0){th++;const bn=bH[h]-(bS>=(h+1)?1:0),cn=cH[h]-(cS>=(h+1)?1:0);if(bn<cn)bW++;else if(cn<bn)cW++;}}const diff=bW-cW,hl=18-th,up=diff>0?'beets':diff<0?'commons':'tied';let r='Not started';if(th>0){if(Math.abs(diff)>hl)r=`${up==='beets'?'Beets':'Commons'} wins`;else if(th===18&&diff===0)r='Halved';else if(th===18)r=`${up==='beets'?'Beets':'Commons'} wins ${Math.abs(diff)} up`;else r=diff===0?`All square · Thru ${th}`:`${up==='beets'?'Beets':'Commons'} ${Math.abs(diff)} up · Thru ${th}`;}return{up,th,r};}
 function bbStat(bN,cN,round){const allN=[...bN,...cN];const sm=groupStrokes(allN,round);let bW=0,cW=0,th=0;for(let h=0;h<18;h++){const bs=bN.map(n=>{const g=getH(n,round)[h];if(!g)return null;const sh=getStrokeHoles(sm[n]||0,round);return g-(sh[h]);}).filter(v=>v!==null);const cs=cN.map(n=>{const g=getH(n,round)[h];if(!g)return null;const sh=getStrokeHoles(sm[n]||0,round);return g-(sh[h]);}).filter(v=>v!==null);if(bs.length&&cs.length){th++;const bb=Math.min(...bs),cb=Math.min(...cs);if(bb<cb)bW++;else if(cb<bb)cW++;}}const diff=bW-cW,hl=18-th,up=diff>0?'beets':diff<0?'commons':'tied';let r='Not started';if(th>0){if(Math.abs(diff)>hl)r=`${up==='beets'?'Beets':'Commons'} wins`;else if(th===18&&diff===0)r='Halved';else if(th===18)r=`${up==='beets'?'Beets':'Commons'} wins ${Math.abs(diff)} up`;else r=diff===0?`All square · Thru ${th}`:`${up==='beets'?'Beets':'Commons'} ${Math.abs(diff)} up · Thru ${th}`;}return{up,th,r};}
+function scoreHeader(offset,labelLeft){const nums=Array.from({length:9},(_,i)=>`<div>${i+1+offset}</div>`).join('');const pars=Array.from({length:9},(_,i)=>`<div style="color:var(--text-secondary);">P${PAR[i+offset]}</div>`).join('');return`<div class="hhdr"><div style="color:var(--text-hint);">${labelLeft||''}</div>${nums}<div>Tot</div></div><div class="hhdr" style="margin-bottom:4px;"><div></div>${pars}<div></div></div>`;}
 function hrowsFront(names,round,col){return names.map(name=>{const holes=getH(name,round),ch=cHcp(name,round-1);const firstName=name.split(' ')[0];const f=holes.slice(0,9).map((s,h)=>`<div class="hcell ${s?hcls(s,PAR[h]):'hem'}">${s||'–'}</div>`).join('');return`<div style="margin-bottom:3px;"><div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;margin-bottom:2px;">${name} · hcp ${ch.toFixed(1)}</div><div class="hrow"><div class="hname" style="color:${col};">${firstName}</div>${f}</div></div>`;}).join('');}
 function hrowsBack(names,round,col){return names.map(name=>{const holes=getH(name,round);const firstName=name.split(' ')[0];const b=holes.slice(9,18).map((s,h)=>`<div class="hcell ${s?hcls(s,PAR[h+9]):'hem'}">${s||'–'}</div>`).join('');return`<div style="margin-bottom:3px;"><div class="hrow"><div class="hname" style="color:${col};">${firstName}</div>${b}</div></div>`;}).join('');}
-function hrows(names,round,col,strokeMap){return names.map(name=>{const holes=getH(name,round),ch=cHcp(name,round-1);const firstName=name.split(' ')[0];const playerStrokes=strokeMap?strokeMap[name]||0:0;const strokeHoles=getStrokeHoles(playerStrokes,round);const fHoles=holes.slice(0,9),bHoles=holes.slice(9,18);const fTot=fHoles.reduce((s,v)=>s+(v||0),0);const bTot=bHoles.reduce((s,v)=>s+(v||0),0);const fNetTot=fHoles.reduce((s,v,h)=>s+(v?v-strokeHoles[h]:0),0);const bNetTot=bHoles.reduce((s,v,h)=>s+(v?v-strokeHoles[h+9]:0),0);const f=fHoles.map((s,h)=>{const net=strokeHoles[h]?s-strokeHoles[h]:null;const cls=s?hcls(net!==null?net:s,PAR[h]):'hem';const disp=s?(net!==null?`<span style="font-size:8px;">${s}<span style="color:var(--amber);">/${net}</span></span>`:`${s}`):'–';return`<div class="hcell ${cls}" style="${strokeHoles[h]?'outline:1px solid var(--amber);':''};">${disp}</div>`;}).join('');const b=bHoles.map((s,h)=>{const net=strokeHoles[h+9]?s-strokeHoles[h+9]:null;const cls=s?hcls(net!==null?net:s,PAR[h+9]):'hem';const disp=s?(net!==null?`<span style="font-size:8px;">${s}<span style="color:var(--amber);">/${net}</span></span>`:`${s}`):'–';return`<div class="hcell ${cls}" style="${strokeHoles[h+9]?'outline:1px solid var(--amber);':''};">${disp}</div>`;}).join('');const fTotCell=`<div class="hcell" style="background:var(--bg-secondary);font-weight:700;color:var(--text);font-size:8px;">${fTot?(fNetTot!==fTot?`${fTot}<span style="color:var(--amber);">/${fNetTot}</span>`:fTot):'–'}</div>`;const bTotCell=`<div class="hcell" style="background:var(--bg-secondary);font-weight:700;color:var(--text);font-size:8px;">${bTot?(bNetTot!==bTot?`${bTot}<span style="color:var(--amber);">/${bNetTot}</span>`:bTot):'–'}</div>`;const total=fTot+bTot;const strokeLabel=strokeMap?(playerStrokes===0?`0 str (hcp ${ch.toFixed(1)})`:playerStrokes+` str (hcp ${ch.toFixed(1)})`):('hcp '+ch.toFixed(1));const dotStr=strokeMap&&playerStrokes>0?` <span style="color:var(--amber);font-size:9px;">${'●'.repeat(Math.min(playerStrokes,5))}${playerStrokes>5?'+':''}</span>`:'';const netTotal=fNetTot+bNetTot;const totalCell=total?`<div class="hrow" style="margin-top:3px;"><div class="hname" style="font-size:9px;color:var(--text-hint);font-family:'DM Mono',monospace;text-transform:uppercase;">Total</div>${Array.from({length:9},()=>'<div></div>').join('')}<div class="hcell" style="background:var(--border-strong);font-weight:700;color:var(--text);font-size:8px;">${total}${netTotal!==total?`<span style="color:var(--amber);">/${netTotal}</span>`:''}</div></div>`:'';
+function hrows(names,round,col,strokeMap){return names.map(name=>{const holes=getH(name,round),ch=cHcp(name,round-1);const firstName=name.split(' ')[0];const playerStrokes=strokeMap?strokeMap[name]||0:0;const strokeHoles=getStrokeHoles(playerStrokes,round);const fHoles=holes.slice(0,9),bHoles=holes.slice(9,18);const fTot=fHoles.reduce((s,v)=>s+(v||0),0);const bTot=bHoles.reduce((s,v)=>s+(v||0),0);const fNetTot=fHoles.reduce((s,v,h)=>s+(v?v-strokeHoles[h]:0),0);const bNetTot=bHoles.reduce((s,v,h)=>s+(v?v-strokeHoles[h+9]:0),0);const f=fHoles.map((s,h)=>{const net=strokeHoles[h]?s-strokeHoles[h]:null;const cls=s?hcls(net!==null?net:s,PAR[h]):'hem';const disp=s?(net!==null?`<span style="font-size:8px;">${s}<span style="color:var(--amber);">/${net}</span></span>`:`${s}`):'–';return`<div class="hcell ${cls}" style="${strokeHoles[h]?'outline:1px solid var(--amber);':''};display:flex;flex-direction:column;align-items:center;gap:1px;"><span style="font-size:7px;color:#FFFFFF;font-weight:700;font-family:'DM Mono',monospace;line-height:1;">P${PAR[h]}</span><span>${disp}</span></div>`;}).join('');const b=bHoles.map((s,h)=>{const net=strokeHoles[h+9]?s-strokeHoles[h+9]:null;const cls=s?hcls(net!==null?net:s,PAR[h+9]):'hem';const disp=s?(net!==null?`<span style="font-size:8px;">${s}<span style="color:var(--amber);">/${net}</span></span>`:`${s}`):'–';return`<div class="hcell ${cls}" style="${strokeHoles[h+9]?'outline:1px solid var(--amber);':''};display:flex;flex-direction:column;align-items:center;gap:1px;"><span style="font-size:7px;color:#FFFFFF;font-weight:700;font-family:'DM Mono',monospace;line-height:1;">P${PAR[h+9]}</span><span>${disp}</span></div>`;}).join('');const fTotCell=`<div class="hcell" style="background:var(--bg-secondary);font-weight:700;color:var(--text);font-size:8px;">${fTot?(fNetTot!==fTot?`${fTot}<span style="color:var(--amber);">/${fNetTot}</span>`:fTot):'–'}</div>`;const bTotCell=`<div class="hcell" style="background:var(--bg-secondary);font-weight:700;color:var(--text);font-size:8px;">${bTot?(bNetTot!==bTot?`${bTot}<span style="color:var(--amber);">/${bNetTot}</span>`:bTot):'–'}</div>`;const total=fTot+bTot;const strokeLabel=strokeMap?(playerStrokes===0?`0 str (hcp ${ch.toFixed(1)})`:playerStrokes+` str (hcp ${ch.toFixed(1)})`):('hcp '+ch.toFixed(1));const dotStr=strokeMap&&playerStrokes>0?` <span style="color:var(--amber);font-size:9px;">${'●'.repeat(Math.min(playerStrokes,5))}${playerStrokes>5?'+':''}</span>`:'';const netTotal=fNetTot+bNetTot;const totalCell=total?`<div class="hrow" style="margin-top:3px;"><div class="hname" style="font-size:9px;color:var(--text-hint);font-family:'DM Mono',monospace;text-transform:uppercase;">Total</div>${Array.from({length:9},()=>'<div></div>').join('')}<div class="hcell" style="background:var(--border-strong);font-weight:700;color:var(--text);font-size:8px;">${total}${netTotal!==total?`<span style="color:var(--amber);">/${netTotal}</span>`:''}</div></div>`:'';
 return`<div style="margin-bottom:8px;"><div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;margin-bottom:2px;">${name}${dotStr} · ${strokeLabel}</div><div class="hrow"><div class="hname" style="color:${col};">${firstName}</div>${f}${fTotCell}</div><div class="hrow" style="margin-top:2px;"><div class="hname"></div>${b}${bTotCell}</div>${totalCell}</div>`;}).join('');}
 
 // Nav
@@ -710,7 +711,7 @@ function renderMatches(){
     return`<div style="font-size:8px;text-align:center;font-family:'DM Mono',monospace;font-weight:600;color:${col};">${lbl}</div>`;
   });
   const t4HTML=`<div style="border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:6px 0;margin:8px 0;"><div style="font-size:9px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;color:var(--text-hint);margin-bottom:4px;">Hole Result · Running Score</div><div class="hrow"><div class="hname" style="font-size:8px;color:var(--text-hint);"></div>${t4cells.slice(0,9).join('')}<div></div></div><div class="hrow" style="margin-top:3px;"><div class="hname"></div>${t4cells.slice(9,18).join('')}<div></div></div></div>`;
-  return`<div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;"><div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--text-hint);">MATCH ${mi+1}</div><span class="mcs ${pcls(s.up)}">${s.r}</span></div><div class="msides" style="margin-bottom:.75rem;grid-template-columns:1fr 56px 56px 1fr;"><div><div class="msn" style="color:var(--green-mid);">Beets</div><div class="msp">${m.beets}</div><div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;margin-top:2px;">hcp ${bC.toFixed(1)} · ${Math.round(bC)} str</div></div><div class="mctr"><div class="mtl" style="font-size:8px;">Standing</div><div style="font-size:11px;font-weight:600;color:${lbl4.col};text-align:center;line-height:1.2;">${lbl4.txt}</div></div><div class="mctr"><div class="mtl">Thru</div><div class="mtv">${ms4.th}</div></div><div style="text-align:right;"><div class="msn" style="color:var(--blue);">Commons</div><div class="msp">${m.commons}</div><div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;margin-top:2px;">hcp ${cC.toFixed(1)} · ${Math.round(cC)} str</div></div></div><div style="border-top:1px solid var(--border);padding-top:.75rem;"><div class="hhdr"><div style="color:var(--text-hint);">Player</div>${Array.from({length:9},(_,i)=>`<div>${i+1} · Par ${PAR[i]}</div>`).join('')}<div>Tot</div></div><div class="hhdr" style="margin-top:1px;margin-bottom:4px;"><div></div>${Array.from({length:9},(_,i)=>`<div>${i+10} · Par ${PAR[i+9]}</div>`).join('')}<div>Tot</div></div>${hrows([m.beets],4,'var(--green-mid)',sm4)}</div>${t4HTML}<div style="border-top:1px solid var(--border);padding-top:.75rem;"><div class="hhdr"><div style="color:var(--text-hint);">Player</div>${Array.from({length:9},(_,i)=>`<div>${i+1} · Par ${PAR[i]}</div>`).join('')}<div>Tot</div></div><div class="hhdr" style="margin-top:1px;margin-bottom:4px;"><div></div>${Array.from({length:9},(_,i)=>`<div>${i+10} · Par ${PAR[i+9]}</div>`).join('')}<div>Tot</div></div>${hrows([m.commons],4,'var(--blue)',sm4)}</div></div>`;
+  return`<div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;"><div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--text-hint);">MATCH ${mi+1}</div><span class="mcs ${pcls(s.up)}">${s.r}</span></div><div class="msides" style="margin-bottom:.75rem;grid-template-columns:1fr 56px 56px 1fr;"><div><div class="msn" style="color:var(--green-mid);">Beets</div><div class="msp">${m.beets}</div><div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;margin-top:2px;">hcp ${bC.toFixed(1)} · ${Math.round(bC)} str</div></div><div class="mctr"><div class="mtl" style="font-size:8px;">Standing</div><div style="font-size:11px;font-weight:600;color:${lbl4.col};text-align:center;line-height:1.2;">${lbl4.txt}</div></div><div class="mctr"><div class="mtl">Thru</div><div class="mtv">${ms4.th}</div></div><div style="text-align:right;"><div class="msn" style="color:var(--blue);">Commons</div><div class="msp">${m.commons}</div><div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;margin-top:2px;">hcp ${cC.toFixed(1)} · ${Math.round(cC)} str</div></div></div><div style="border-top:1px solid var(--border);padding-top:.75rem;">${hrows([m.beets],4,'var(--green-mid)',sm4)}</div>${t4HTML}<div style="border-top:1px solid var(--border);padding-top:.75rem;">${hrows([m.commons],4,'var(--blue)',sm4)}</div></div>`;
 })();
       });
       h+=`</div></div>`;
@@ -739,8 +740,8 @@ function renderMatches(){
       const fHoles=holes.slice(0,9),bkHoles=holes.slice(9,18);
       const fTot=fHoles.reduce((s,v)=>s+(v||0),0);
       const bkTot=bkHoles.reduce((s,v)=>s+(v||0),0);
-      const f=fHoles.map((s,i2)=>`<div class="hcell ${s?hcls(s,PAR[i2]):'hem'}">${s||'–'}</div>`).join('');
-      const bk=bkHoles.map((s,i2)=>`<div class="hcell ${s?hcls(s,PAR[i2+9]):'hem'}">${s||'–'}</div>`).join('');
+      const f=fHoles.map((s,i2)=>`<div class="hcell ${s?hcls(s,PAR[i2]):'hem'}" style="display:flex;flex-direction:column;align-items:center;gap:1px;"><span style="font-size:7px;color:#FFFFFF;font-weight:700;font-family:'DM Mono',monospace;line-height:1;">P${PAR[i2]}</span><span>${s||'–'}</span></div>`).join('');
+      const bk=bkHoles.map((s,i2)=>`<div class="hcell ${s?hcls(s,PAR[i2+9]):'hem'}" style="display:flex;flex-direction:column;align-items:center;gap:1px;"><span style="font-size:7px;color:#FFFFFF;font-weight:700;font-family:'DM Mono',monospace;line-height:1;">P${PAR[i2+9]}</span><span>${s||'–'}</span></div>`).join('');
       const fTotCell=`<div class="hcell" style="background:var(--bg-secondary);font-weight:700;color:var(--text);font-size:8px;">${fTot||'–'}</div>`;
       const bkTotCell=`<div class="hcell" style="background:var(--bg-secondary);font-weight:700;color:var(--text);font-size:8px;">${bkTot||'–'}</div>`;
       const total=fTot+bkTot;
@@ -786,8 +787,7 @@ function renderMatches(){
           <div style="text-align:right;"><div class="msn" style="color:var(--blue);">The Commons</div><div class="msp">${g.commonsLabel||'TBD'}</div></div>
         </div>
         <div style="border-top:1px solid var(--border);padding-top:.75rem;">
-          <div class="hhdr"><div style="color:var(--text-hint);">Group</div>${Array.from({length:9},(_,i2)=>`<div>${i2+1} · Par ${PAR[i2]}</div>`).join('')}<div>Tot</div></div>
-          <div class="hhdr" style="margin-top:1px;margin-bottom:4px;"><div></div>${Array.from({length:9},(_,i2)=>`<div>${i2+10} · Par ${PAR[i2+9]}</div>`).join('')}<div>Tot</div></div>
+          
           ${groupRow(g.beetsKey,g.beets,'var(--green-mid)')}
           ${r3trackerHTML}
           ${groupRow(g.commonsKey,g.commons,'var(--blue)')}
@@ -818,7 +818,7 @@ function renderMatches(){
       const cN=(pair.commons||[]).filter(n=>n&&n!=='–');
       if(!bN.length&&!cN.length)return;
       const s=bbStat(bN,cN,r);
-      h+=(()=>{const allN=[...bN,...cN];const sm=groupStrokes(allN,r);const bbNet=(names,h)=>{  const nets=names.map(n=>{const g=getH(n,r)[h];if(!g)return null;  const strokes=sm[n]||0;const sh=getStrokeHoles(strokes,r);  return g-(sh[h]);}).filter(v=>v!==null);  return nets.length?Math.min(...nets):null;};let bW=0,cW=0,th2=0;const trackerCells=Array.from({length:18},(_,h)=>{  const bn=bbNet(bN,h),cn=bbNet(cN,h);  if(bn===null||cn===null)return`<div style="font-size:8px;text-align:center;color:var(--text-hint);">–</div>`;  th2++;const diff2=bn-cn;  if(diff2<0)bW++;else if(diff2>0)cW++;  const run=bW-cW;  const col=run>0?'var(--green-mid)':run<0?'var(--blue)':'var(--text-hint)';  const lbl=run>0?`B+${run}`:run<0?`C+${Math.abs(run)}`:'AS';  return`<div style="font-size:8px;text-align:center;font-family:'DM Mono',monospace;font-weight:600;color:${col};">${lbl}</div>`;});const teamRow=(names,col,label)=>{  const fCells=Array.from({length:9},(_,h)=>{    const nets=names.map(n=>{const g=getH(n,r)[h];if(!g)return null;const sh=getStrokeHoles(sm[n]||0,r);const strokes=sh[h];return{g,net:g-strokes,hasStroke:strokes>0};}).filter(v=>v!==null);    if(!nets.length)return`<div class="hcell hem">–</div>`;    const best=nets.reduce((a,b)=>b.net<a.net?b:a);    return`<div class="hcell ${hcls(best.net,PAR[h])}">${best.hasStroke?`${best.g}/${best.net}`:`${best.g}`}</div>`;  }).join('');  const bCells=Array.from({length:9},(_,h)=>{    const nets=names.map(n=>{const g=getH(n,r)[h+9];if(!g)return null;const sh=getStrokeHoles(sm[n]||0,r);const strokes=sh[h+9];return{g,net:g-strokes,hasStroke:strokes>0};}).filter(v=>v!==null);    if(!nets.length)return`<div class="hcell hem">–</div>`;    const best=nets.reduce((a,b)=>b.net<a.net?b:a);    return`<div class="hcell ${hcls(best.net,PAR[h+9])}">${best.hasStroke?`${best.g}/${best.net}`:`${best.g}`}</div>`;  }).join('');  const fTot=Array.from({length:9},(_,h)=>{const nets=names.map(n=>{const g=getH(n,r)[h];if(!g)return null;const sh=getStrokeHoles(sm[n]||0,r);return g-(sh[h]);}).filter(v=>v!==null);return nets.length?Math.min(...nets):0;}).reduce((a,b)=>a+b,0);  const bTot=Array.from({length:9},(_,h)=>{const nets=names.map(n=>{const g=getH(n,r)[h+9];if(!g)return null;const sh=getStrokeHoles(sm[n]||0,r);return g-sh[h+9];}).filter(v=>v!==null);return nets.length?Math.min(...nets):0;}).reduce((a,b)=>a+b,0);  const fTotCell=`<div class="hcell" style="background:var(--bg-secondary);font-weight:700;color:${col};font-size:8px;">${fTot||'–'}</div>`;  const bTotCell=`<div class="hcell" style="background:var(--bg-secondary);font-weight:700;color:${col};font-size:8px;">${bTot||'–'}</div>`;  return`<div style="margin:6px 0 2px;"><div style="font-size:9px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;color:${col};font-weight:700;margin-bottom:3px;">${label} Best Ball</div><div class="hrow"><div class="hname" style="color:${col};">Front 9</div>${fCells}${fTotCell}</div><div class="hrow" style="margin-top:2px;"><div class="hname" style="color:${col};">Back 9</div>${bCells}${bTotCell}</div></div>`;};const trackerHTML=`<div style="border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:6px 0;margin:8px 0;"><div style="font-size:9px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;color:var(--text-hint);margin-bottom:4px;">Hole Result · Running Score</div><div class="hrow"><div class="hname" style="font-size:8px;color:var(--text-hint);"></div>${trackerCells.slice(0,9).join('')}<div></div></div><div class="hrow" style="margin-top:3px;"><div class="hname"></div>${trackerCells.slice(9,18).join('')}<div></div></div></div>`;return`<div class="mc"><div class="mch"><span class="mct"><span style="display:block;">${pair.teeTime}</span><span style="display:block;font-size:10px;color:var(--text-hint);margin-top:2px;font-weight:400;letter-spacing:0;text-transform:none;"><span style="color:var(--green-mid);">${bN.join(' / ')}</span> <span style="color:var(--text-hint);">vs</span> <span style="color:var(--blue);">${cN.join(' / ')}</span></span></span><span class="mcs ${pcls(s.up)}">${s.r}</span><span></span></div><div class="mcb"><div style="border-bottom:1px solid var(--border);padding-bottom:.75rem;margin-bottom:0;"><div class="hhdr"><div style="color:var(--blue);">Commons</div>${Array.from({length:9},(_,i)=>`<div>${i+1}·Par${PAR[i]}</div>`).join('')}<div>Tot</div></div><div class="hhdr" style="margin-top:1px;margin-bottom:4px;"><div></div>${Array.from({length:9},(_,i)=>`<div>${i+10}·Par${PAR[i+9]}</div>`).join('')}<div>Tot</div></div>${hrows(cN,r,'var(--blue)',sm)}${teamRow(cN,'var(--blue)','Commons')}</div>${trackerHTML}<div style="border-top:1px solid var(--border);padding-top:.75rem;">${teamRow(bN,'var(--green-mid)','Beets')}<div style="border-top:1px solid var(--border);padding-top:.75rem;margin-top:6px;"><div class="hhdr"><div style="color:var(--green-mid);">Beets</div>${Array.from({length:9},(_,i)=>`<div>${i+1}·Par${PAR[i]}</div>`).join('')}<div>Tot</div></div><div class="hhdr" style="margin-top:1px;margin-bottom:4px;"><div></div>${Array.from({length:9},(_,i)=>`<div>${i+10}·Par${PAR[i+9]}</div>`).join('')}<div>Tot</div></div>${hrows(bN,r,'var(--green-mid)',sm)}</div></div></div></div>`;})();
+      h+=(()=>{const allN=[...bN,...cN];const sm=groupStrokes(allN,r);const bbNet=(names,h)=>{  const nets=names.map(n=>{const g=getH(n,r)[h];if(!g)return null;  const strokes=sm[n]||0;const sh=getStrokeHoles(strokes,r);  return g-(sh[h]);}).filter(v=>v!==null);  return nets.length?Math.min(...nets):null;};let bW=0,cW=0,th2=0;const trackerCells=Array.from({length:18},(_,h)=>{  const bn=bbNet(bN,h),cn=bbNet(cN,h);  if(bn===null||cn===null)return`<div style="font-size:8px;text-align:center;color:var(--text-hint);">–</div>`;  th2++;const diff2=bn-cn;  if(diff2<0)bW++;else if(diff2>0)cW++;  const run=bW-cW;  const col=run>0?'var(--green-mid)':run<0?'var(--blue)':'var(--text-hint)';  const lbl=run>0?`B+${run}`:run<0?`C+${Math.abs(run)}`:'AS';  return`<div style="font-size:8px;text-align:center;font-family:'DM Mono',monospace;font-weight:600;color:${col};">${lbl}</div>`;});const teamRow=(names,col,label)=>{  const fCells=Array.from({length:9},(_,h)=>{    const nets=names.map(n=>{const g=getH(n,r)[h];if(!g)return null;const sh=getStrokeHoles(sm[n]||0,r);const strokes=sh[h];return{g,net:g-strokes,hasStroke:strokes>0};}).filter(v=>v!==null);    if(!nets.length)return`<div class="hcell hem">–</div>`;    const best=nets.reduce((a,b)=>b.net<a.net?b:a);    return`<div class="hcell ${hcls(best.net,PAR[h])}" style="display:flex;flex-direction:column;align-items:center;gap:1px;"><span style="font-size:7px;color:#FFFFFF;font-weight:700;font-family:'DM Mono',monospace;line-height:1;">P${PAR[h]}</span><span>${best.hasStroke?`${best.g}/${best.net}`:`${best.g}`}</span></div>`;  }).join('');  const bCells=Array.from({length:9},(_,h)=>{    const nets=names.map(n=>{const g=getH(n,r)[h+9];if(!g)return null;const sh=getStrokeHoles(sm[n]||0,r);const strokes=sh[h+9];return{g,net:g-strokes,hasStroke:strokes>0};}).filter(v=>v!==null);    if(!nets.length)return`<div class="hcell hem">–</div>`;    const best=nets.reduce((a,b)=>b.net<a.net?b:a);    return`<div class="hcell ${hcls(best.net,PAR[h+9])}" style="display:flex;flex-direction:column;align-items:center;gap:1px;"><span style="font-size:7px;color:#FFFFFF;font-weight:700;font-family:'DM Mono',monospace;line-height:1;">P${PAR[h+9]}</span><span>${best.hasStroke?`${best.g}/${best.net}`:`${best.g}`}</span></div>`;  }).join('');  const fTot=Array.from({length:9},(_,h)=>{const nets=names.map(n=>{const g=getH(n,r)[h];if(!g)return null;const sh=getStrokeHoles(sm[n]||0,r);return g-(sh[h]);}).filter(v=>v!==null);return nets.length?Math.min(...nets):0;}).reduce((a,b)=>a+b,0);  const bTot=Array.from({length:9},(_,h)=>{const nets=names.map(n=>{const g=getH(n,r)[h+9];if(!g)return null;const sh=getStrokeHoles(sm[n]||0,r);return g-sh[h+9];}).filter(v=>v!==null);return nets.length?Math.min(...nets):0;}).reduce((a,b)=>a+b,0);  const fTotCell=`<div class="hcell" style="background:var(--bg-secondary);font-weight:700;color:${col};font-size:8px;">${fTot||'–'}</div>`;  const bTotCell=`<div class="hcell" style="background:var(--bg-secondary);font-weight:700;color:${col};font-size:8px;">${bTot||'–'}</div>`;  return`<div style="margin:6px 0 2px;"><div style="font-size:9px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;color:${col};font-weight:700;margin-bottom:3px;">${label} Best Ball</div><div class="hrow"><div class="hname" style="color:${col};">Front 9</div>${fCells}${fTotCell}</div><div class="hrow" style="margin-top:2px;"><div class="hname" style="color:${col};">Back 9</div>${bCells}${bTotCell}</div></div>`;};const trackerHTML=`<div style="border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:6px 0;margin:8px 0;"><div style="font-size:9px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;color:var(--text-hint);margin-bottom:4px;">Hole Result · Running Score</div><div class="hrow"><div class="hname" style="font-size:8px;color:var(--text-hint);"></div>${trackerCells.slice(0,9).join('')}<div></div></div><div class="hrow" style="margin-top:3px;"><div class="hname"></div>${trackerCells.slice(9,18).join('')}<div></div></div></div>`;return`<div class="mc"><div class="mch"><span class="mct"><span style="display:block;">${pair.teeTime}</span><span style="display:block;font-size:10px;color:var(--text-hint);margin-top:2px;font-weight:400;letter-spacing:0;text-transform:none;"><span style="color:var(--green-mid);">${bN.join(' / ')}</span> <span style="color:var(--text-hint);">vs</span> <span style="color:var(--blue);">${cN.join(' / ')}</span></span></span><span class="mcs ${pcls(s.up)}">${s.r}</span><span></span></div><div class="mcb"><div style="border-bottom:1px solid var(--border);padding-bottom:.75rem;margin-bottom:0;">${hrows(cN,r,'var(--blue)',sm)}${teamRow(cN,'var(--blue)','Commons')}</div>${trackerHTML}<div style="border-top:1px solid var(--border);padding-top:.75rem;">${teamRow(bN,'var(--green-mid)','Beets')}<div style="border-top:1px solid var(--border);padding-top:.75rem;margin-top:6px;">${hrows(bN,r,'var(--green-mid)',sm)}</div></div></div></div>`;})();
     });
     // R2 summary
     let r2bPts=0,r2cPts=0;
@@ -939,8 +939,10 @@ function renderPlayers(){
 
       return`<div style="padding:10px 0;border-bottom:1px solid var(--border);">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:${hasScores?'8px':'0'};">
-          <div class="pleft"><div class="av ${isBeets?'avg':'avb'}">${ini}</div><div><div style="display:flex;align-items:flex-start;gap:8px;"><div class="pname">${name}</div><div class="phcp" style="line-height:1.7;text-align:right;">idx ${getHcpForRound(name,0)??HCP[name]}${(LOCKED_ROUNDS[1]||LOCKED_ROUNDS[2]||LOCKED_ROUNDS[4])?'':''}<br>R1: ${ch1.toFixed(1)}${LOCKED_ROUNDS[1]?' 🔒':''}<br>R2: ${ch2.toFixed(1)}${LOCKED_ROUNDS[2]?' 🔒':''}<br>R4: ${ch4.toFixed(1)}${LOCKED_ROUNDS[4]?' 🔒':''}</div></div></div></div>
-          <div style="text-align:right;"><span class="badge ${isBeets?'bg':'bb'}">${isBeets?'Beets':'Commons'}</span><div style="font-size:11px;font-weight:600;color:${teamPts>0?'var(--amber)':'var(--text-hint)'};margin-top:4px;">${fmtP(teamPts)} team pts</div>
+          <div class="pleft"><div class="av ${isBeets?'avg':'avb'}">${ini}</div><div><div class="pname">${name}</div><div style="font-size:10px;color:var(--text-secondary);font-family:'DM Mono',monospace;margin-top:2px;">${isBeets?'Beets':'Commons'}</div></div></div>
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div class="phcp" style="line-height:1.8;text-align:center;min-width:56px;"><div style="font-size:9px;color:var(--text-hint);text-transform:uppercase;letter-spacing:.05em;margin-bottom:1px;">Handicap</div><div>idx ${getHcpForRound(name,0)??HCP[name]}</div><div>R1: ${ch1.toFixed(1)}${LOCKED_ROUNDS[1]?' 🔒':''}</div><div>R2: ${ch2.toFixed(1)}${LOCKED_ROUNDS[2]?' 🔒':''}</div><div>R4: ${ch4.toFixed(1)}${LOCKED_ROUNDS[4]?' 🔒':''}</div></div>
+            <div style="text-align:right;"><span class="badge ${isBeets?'bg':'bb'}">${fmtP(teamPts)}</span><div style="font-size:9px;color:var(--text-hint);margin-top:3px;font-family:'DM Mono',monospace;">team pts</div></div>
           </div>
         </div>
         ${hasScores?`<div style="background:var(--bg-secondary);border-radius:var(--radius);padding:6px 10px;">
@@ -1155,17 +1157,79 @@ async function savePair(round){
 function buildHcpEditor(){
   ['beets','commons'].forEach(team=>{
     const names=team==='beets'?BEETS:COMMONS;
-    document.getElementById('he'+team).innerHTML=names.map(name=>`<div class="herow"><div class="hename">${name}</div><input class="heinp" type="number" id="hcpinp_${name.replace(/[\s.]/g,'_')}" value="${HCP[name]}" step="0.1" min="0" max="54"><div class="heunit">idx</div></div>`).join('');
+    document.getElementById('he'+team).innerHTML=names.map(name=>{
+      const key=name.replace(/[\s.]/g,'_');
+      return`<div class="herow" style="grid-template-columns:1fr 1fr 80px 30px;gap:6px;">
+        <input class="heinp" type="text" id="nameinp_${key}" value="${name}" style="font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;text-align:left;">
+        <div></div>
+        <input class="heinp" type="number" id="hcpinp_${key}" value="${HCP[name]}" step="0.1" min="0" max="54">
+        <div class="heunit">idx</div>
+      </div>`;
+    }).join('');
   });
 }
 
+async function renamePlayer(oldName, newName){
+  if(!newName||newName===oldName)return;
+  // Update BEETS or COMMONS array
+  const bi=BEETS.indexOf(oldName);
+  if(bi!==-1)BEETS[bi]=newName;
+  const ci=COMMONS.indexOf(oldName);
+  if(ci!==-1)COMMONS[ci]=newName;
+  // Migrate HCP
+  if(HCP[oldName]!==undefined){HCP[newName]=HCP[oldName];delete HCP[oldName];}
+  // Migrate SCORES
+  if(SCORES[oldName]!==undefined){SCORES[newName]=SCORES[oldName];delete SCORES[oldName];}
+  // Migrate HCP_HISTORY
+  if(HCP_HISTORY[oldName]!==undefined){HCP_HISTORY[newName]=HCP_HISTORY[oldName];delete HCP_HISTORY[oldName];}
+  // Migrate PAIRINGS references
+  [1,2,3,4].forEach(r=>{
+    (PAIRINGS[r]||[]).forEach(p=>{
+      // R1/R2/R3 format: {beets:[],commons:[]}
+      if(p.beets&&Array.isArray(p.beets))p.beets=p.beets.map(n=>n===oldName?newName:n);
+      if(p.commons&&Array.isArray(p.commons))p.commons=p.commons.map(n=>n===oldName?newName:n);
+      // R4 format: {matches:[{beets,commons}]}
+      if(p.matches)p.matches.forEach(m=>{
+        if(m.beets===oldName)m.beets=newName;
+        if(m.commons===oldName)m.commons=newName;
+      });
+      // R1 format: direct string names
+      if(p.beets===oldName)p.beets=newName;
+      if(p.commons===oldName)p.commons=newName;
+    });
+  });
+  // Update Supabase — rename in all tables
+  if(sb){
+    await sb.from('omega_handicaps').update({player:newName}).eq('player',oldName);
+    await sb.from('omega_scores').update({player:newName}).eq('player',oldName);
+    await sb.from('omega_hcp_history').update({player:newName}).eq('player',oldName);
+    // Re-push pairings so they reflect new name
+    for(const r of [1,2,3,4]){
+      if((PAIRINGS[r]||[]).length)await pushPairings(r,PAIRINGS[r]);
+    }
+  }
+}
+
 async function saveHcps(){
+  const allNames=[...BEETS,...COMMONS];
+  // Process renames first (snapshot old names before any mutations)
+  const renames=allNames.map(oldName=>{
+    const key=oldName.replace(/[\s.]/g,'_');
+    const inp=document.getElementById('nameinp_'+key);
+    const newName=inp?inp.value.trim():'';
+    return{oldName,newName};
+  }).filter(({oldName,newName})=>newName&&newName!==oldName);
+  for(const {oldName,newName} of renames)await renamePlayer(oldName,newName);
+  // Now save handicaps (names in BEETS/COMMONS are updated)
   const updates=[...BEETS,...COMMONS].map(async name=>{
-    const v=parseFloat(document.getElementById('hcpinp_'+name.replace(/[\s.]/g,'_'))?.value);
+    const key=name.replace(/[\s.]/g,'_');
+    const v=parseFloat(document.getElementById('hcpinp_'+key)?.value);
     if(!isNaN(v)&&v>=0){HCP[name]=v;await pushHcp(name,v);}
   });
   await Promise.all(updates);
-  renderPlayers();buildPlayerDrop();[1,2,3,4].forEach(buildPairEd);renderMatches();
+  buildHcpEditor();
+  [1,2,3,4].forEach(buildPairEd);
+  refreshAll();
   const f=document.getElementById('hcpflash');f.style.display='block';setTimeout(()=>f.style.display='none',2500);
 }
 
@@ -1371,7 +1435,7 @@ async function clearPair(round){
   if(f){f.style.display='block';setTimeout(()=>f.style.display='none',2500);}
 }
 
-function refreshAll(){updatePinDisplay();renderDashboard();renderMatchTabs();renderMatches();renderSched();renderPlayers();buildPlayerDrop();buildClearDrop();updateScoreLockState();updateSignStatus();}
+function refreshAll(){updatePinDisplay();renderDashboard();renderMatchTabs();renderMatches();renderSched();renderPlayers();buildPlayerDrop();buildClearDrop();updateScoreLockState();updateSignStatus();updateDashLockBadges();}
 
 // Dashboard
 function renderDashboard(){
@@ -1521,7 +1585,8 @@ function renderDashboard(){
       const ri=i+1;
       const hasData=r.b>0||r.c>0;
       const locked=LOCKED_ROUNDS[ri];
-      const badge=locked?'<span class="badge bg">✓ Signed</span>':'<span class="badge bgr">Soon</span>';
+      const hasAnyScore=Object.values(SCORES).some(s=>s[ri]&&s[ri].some(v=>v>0));
+      const badge=locked?'<span class="badge bgr">🔒 Locked</span>':hasAnyScore?'<span class="badge bg">🔴 Live</span>':'<span class="badge bgr">Soon</span>';
       const fmt=v=>v===Math.floor(v)?v:v.toFixed(1);
       return`<div class="rrow"><div class="rinfo"><div class="rname">${rNames[i]}</div><div class="rsub">${rSubs[i]}</div></div><div class="rscores"><div class="rscore sg">${hasData?fmt(r.b):'–'}</div><div style="font-size:10px;color:var(--text-hint);">vs</div><div class="rscore sb">${hasData?fmt(r.c):'–'}</div>${badge}</div></div>`;
     }).join('');
@@ -1764,9 +1829,16 @@ function updateDashLockBadges(){
       badge.textContent='🔒 Locked';
       badge.className='badge bgr';
     } else {
-      const defaults={1:{text:'Today',cls:'ba'},2:{text:'Soon',cls:'bgr'},3:{text:'Soon',cls:'bgr'},4:{text:'Soon',cls:'bgr'}};
-      badge.textContent=defaults[r].text;
-      badge.className='badge '+defaults[r].cls;
+      // Check if any scores exist for this round
+      const hasScores=Object.values(SCORES).some(s=>s[r]&&s[r].length>0);
+      if(hasScores){
+        badge.textContent='🔴 Live';
+        badge.className='badge bg';
+      } else {
+        const defaults={1:{text:'Today',cls:'ba'},2:{text:'Soon',cls:'bgr'},3:{text:'Soon',cls:'bgr'},4:{text:'Soon',cls:'bgr'}};
+        badge.textContent=defaults[r].text;
+        badge.className='badge '+defaults[r].cls;
+      }
     }
   });
 }
