@@ -350,6 +350,7 @@ button,select,input{touch-action:manipulation;-webkit-tap-highlight-color:transp
         <div class="card"><div class="ctitle">R3 Pairings · Reflections</div><div class="astitle">2 Beets vs 2 Commons per group</div><div id="r3ed"></div><div style="display:flex;gap:8px;margin-top:0;"><button class="svrnd" id="btn-r3">Save R3 Pairings</button><button class="svrnd" id="btn-clrpair3" style="background:var(--red-light);color:var(--red);border-color:var(--red);">Clear Pairings</button></div><div class="flash" id="r3flash">✓ Saved!</div><div class="flash" id="r3clrflash" style="color:var(--amber);">✓ Pairings cleared.</div></div>
         <div class="card"><div class="ctitle">R4 Pairings · Fountains</div><div class="astitle">8 singles · 2 per tee time</div><div id="r4ed"></div><div style="display:flex;gap:8px;margin-top:0;"><button class="svrnd" id="btn-r4">Save R4 Pairings</button><button class="svrnd" id="btn-clrpair4" style="background:var(--red-light);color:var(--red);border-color:var(--red);">Clear Pairings</button></div><div class="flash" id="r4flash">✓ Saved!</div><div class="flash" id="r4clrflash" style="color:var(--amber);">✓ Pairings cleared.</div></div>
         <div class="card"><div class="ctitle">Handicaps</div><div class="astitle" style="color:var(--green-mid);">The Beets</div><div id="hebeets"></div><div class="sdiv"></div><div class="astitle" style="color:var(--blue);">The Commons</div><div id="hecommons"></div><button class="svrnd" id="btn-hcp" style="margin-top:12px;">Save Handicaps</button><div class="flash" id="hcpflash">✓ Saved!</div></div>
+        <div class="card"><div class="ctitle">Side Match Teams</div><div class="astitle" style="margin-bottom:.875rem;">4 teams of 2 · Any players · R1, R2 & R4</div><div id="side-team-editor"></div><button class="svrnd" id="btn-side-teams" style="margin-top:12px;">Save Side Match Teams</button><div class="flash" id="sideteamflash">✓ Saved!</div></div>
         <div class="card"><div class="ctitle">Clear Scores</div><div class="astitle" style="margin-bottom:.875rem;">Remove a player's scorecard for a specific round.</div><div style="margin-bottom:.75rem;"><label class="flabel">Round</label><select class="fsel" id="clear-round"><option value="1">R1 · Fri · Swampfire (Stableford)</option><option value="2">R2 · Sat AM · Monarch (Best Ball)</option><option value="3">R3 · Sat PM · Reflections (Scramble)</option><option value="4">R4 · Sun · Fountains (Singles)</option></select></div><div style="margin-bottom:1rem;"><label class="flabel">Player</label><select class="fsel" id="clear-player"><option value="">Select player...</option></select></div><div style="display:flex;gap:8px;"><button class="svrnd" id="btn-clear-scores" style="background:var(--red-light);color:var(--red);border-color:var(--red);font-weight:600;">Clear Scores</button><button class="svrnd" id="btn-clear-all" style="background:var(--red-light);color:var(--red);border-color:var(--red);font-weight:600;">Clear All</button></div><div style="margin-top:8px;"><button class="svrnd" id="btn-clear-everything" style="width:100%;background:var(--red-light);color:var(--red);border-color:var(--red);font-weight:600;">⚠️ Clear All Rounds</button></div><div id="clear-confirm" style="display:none;margin-top:10px;padding:12px;background:var(--red-light);border:1px solid var(--red);border-radius:var(--radius);"><div style="font-size:12px;font-family:'DM Mono',monospace;color:var(--red);margin-bottom:10px;" id="clear-confirm-msg"></div><div style="display:flex;gap:8px;"><button id="btn-clear-yes" style="flex:1;padding:9px;background:var(--red);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;">Yes, Clear It</button><button id="btn-clear-no" style="flex:1;padding:9px;background:var(--bg-card);color:var(--text);border:1px solid var(--border-strong);border-radius:var(--radius);font-size:13px;cursor:pointer;">Cancel</button></div></div><div class="flash" id="clearflash" style="color:var(--red);">✓ Scores cleared.</div></div>
         <div class="card"><div class="ctitle">Sign Scorecard</div><div class="astitle" style="margin-bottom:.875rem;">Lock a round to prevent further score changes.</div><div style="margin-bottom:1rem;"><label class="flabel">Round</label><select class="fsel" id="sign-round"><option value="1">R1 · Fri · Swampfire (Stableford)</option><option value="2">R2 · Sat AM · Monarch (Best Ball)</option><option value="3">R3 · Sat PM · Reflections (Scramble)</option><option value="4">R4 · Sun · Fountains (Singles)</option></select></div><div id="sign-status" style="font-size:12px;font-family:'DM Mono',monospace;color:var(--text-hint);margin-bottom:.75rem;"></div><div style="display:flex;gap:8px;"><button class="svrnd" id="btn-sign" style="background:var(--green-light);color:var(--green-mid);border-color:var(--green-mid);font-weight:600;">🔒 Sign Scorecard</button><button class="svrnd" id="btn-open-round" style="font-weight:600;">Open Round</button></div><div id="sign-confirm" style="display:none;margin-top:10px;padding:12px;background:var(--green-light);border:1px solid var(--green-mid);border-radius:var(--radius);"><div style="font-size:12px;font-family:'DM Mono',monospace;color:var(--green-mid);margin-bottom:10px;" id="sign-confirm-msg"></div><div style="display:flex;gap:8px;"><button id="btn-sign-yes" style="flex:1;padding:9px;background:var(--green-mid);color:var(--bg);border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;">Yes, Sign It</button><button id="btn-sign-cancel" style="flex:1;padding:9px;background:var(--bg-card);color:var(--text);border:1px solid var(--border-strong);border-radius:var(--radius);font-size:13px;cursor:pointer;">Cancel</button></div></div><div class="flash" id="signflash"></div></div>
         <div class="card"><div class="ctitle">Score Entry PIN</div><div class="astitle" style="margin-bottom:.875rem;">Set the 4-digit PIN required to access score entry. Leave blank to disable PIN.</div><div style="margin-bottom:1rem;"><label class="flabel">New PIN (4 digits)</label><input class="finp" type="number" id="pin-input" placeholder="e.g. 1234" min="0" max="9999" inputmode="numeric" style="letter-spacing:.2em;font-family:'DM Mono',monospace;font-size:18px;text-align:center;"></div><div style="display:flex;gap:8px;"><button class="svrnd" id="btn-save-pin" style="background:var(--green-light);color:var(--green-mid);border-color:var(--green-mid);font-weight:600;">Save PIN</button><button class="svrnd" id="btn-clear-pin" style="background:var(--red-light);color:var(--red);border-color:var(--red);font-weight:600;">Remove PIN</button></div><div class="flash" id="pinflash">✓ PIN updated!</div><div id="pin-current" style="font-size:11px;font-family:'DM Mono',monospace;color:var(--text-hint);margin-top:8px;"></div></div>
@@ -442,6 +443,8 @@ let SCORES={};
 const TTIMES={1:['3:00 PM','3:10 PM','3:20 PM','3:30 PM'],2:['8:40 AM','8:50 AM','9:00 AM','9:10 AM'],3:['2:40 PM','2:50 PM','3:00 PM','3:10 PM'],4:['8:30 AM','8:40 AM','8:50 AM','9:00 AM']};
 const PW='RedWings1';
 let SCORES_PIN='';// 4-digit PIN to access score entry
+// Side Match: 4 teams of 2, any players, R1/R2/R4 only
+let SIDE_TEAMS=[{name:'Team 1',players:['','']},{name:'Team 2',players:['','']},{name:'Team 3',players:['','']},{name:'Team 4',players:['','']}];
 let SCORES_UNLOCKED=false;
 let curMatchRound=1;
 let sb=null;
@@ -500,19 +503,20 @@ async function loadAll(){
   if(hc)hc.forEach(r=>{HCP[r.player]=r.hcp;});
   if(lk)lk.forEach(r=>{LOCKED_ROUNDS[r.round]=r.locked;});
   if(hh)hh.forEach(r=>{if(!HCP_HISTORY[r.player])HCP_HISTORY[r.player]={};HCP_HISTORY[r.player][r.round]=r.hcp;});
-  if(st){const sp=st.find(r=>r.key==='scores_pin');if(sp)SCORES_PIN=sp.value;
-  const cd=st.find(r=>r.key==='countdown_target');if(cd){COUNTDOWN_TARGET=new Date(cd.value);const parts=cd.value.split('T');if(parts.length===2){const di=document.getElementById('cd-date-input');const ti=document.getElementById('cd-time-input');if(di)di.value=parts[0];if(ti)ti.value=parts[1].substring(0,5);}}}
+  if(st){const sp=st.find(r=>r.key==='scores_pin');if(sp)SCORES_PIN=sp.value;const stt=st.find(r=>r.key==='side_teams');if(stt){try{SIDE_TEAMS=JSON.parse(stt.value);}catch(e){}}
+  const cd=st.find(r=>r.key==='countdown_target');if(cd){const parts=cd.value.split('T');if(parts.length===2){const [cy,cmo,cdd]=parts[0].split('-').map(Number);const [ch,cmin]=parts[1].substring(0,5).split(':').map(Number);COUNTDOWN_TARGET=new Date(cy,cmo-1,cdd,ch,cmin,0);const di=document.getElementById('cd-date-input');const ti=document.getElementById('cd-time-input');if(di)di.value=parts[0];if(ti)ti.value=parts[1].substring(0,5);}}}
   refreshAll();
 }
 function subscribe(){
   if(!sb)return;
-  sb.channel('omega').on('postgres_changes',{event:'*',schema:'public',table:'omega_locks'},p=>{const r=p.new;if(r){LOCKED_ROUNDS[r.round]=r.locked;refreshAll();}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_scores'},p=>{const r=p.new;if(r){if(!SCORES[r.player])SCORES[r.player]={};SCORES[r.player][r.round]=r.holes;refreshAll();}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_pairings'},p=>{const r=p.new;if(r){PAIRINGS[r.round]=r.data;refreshAll();}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_handicaps'},p=>{const r=p.new;if(r){HCP[r.player]=r.hcp;refreshAll();}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_hcp_history'},p=>{const r=p.new;if(r){if(!HCP_HISTORY[r.player])HCP_HISTORY[r.player]={};HCP_HISTORY[r.player][r.round]=r.hcp;refreshAll();}}).subscribe();
+  sb.channel('omega').on('postgres_changes',{event:'*',schema:'public',table:'omega_locks'},p=>{const r=p.new;if(r){LOCKED_ROUNDS[r.round]=r.locked;refreshAll();}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_scores'},p=>{const r=p.new;if(r){if(!SCORES[r.player])SCORES[r.player]={};SCORES[r.player][r.round]=r.holes;refreshAll();}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_pairings'},p=>{const r=p.new;if(r){PAIRINGS[r.round]=r.data;refreshAll();}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_handicaps'},p=>{const r=p.new;if(r){HCP[r.player]=r.hcp;refreshAll();}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_settings'},p=>{const r=p.new;if(r&&r.key==='side_teams'){try{SIDE_TEAMS=JSON.parse(r.value);refreshAll();}catch(e){}}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_hcp_history'},p=>{const r=p.new;if(r){if(!HCP_HISTORY[r.player])HCP_HISTORY[r.player]={};HCP_HISTORY[r.player][r.round]=r.hcp;refreshAll();}}).subscribe();
 }
 async function pushScore(p,round,holes){if(!sb)return;await sb.from('omega_scores').upsert({player:p,round,holes,updated_at:new Date().toISOString()},{onConflict:'player,round'});}
 async function pushPairings(round,data){if(!sb)return;await sb.from('omega_pairings').upsert({round,data,updated_at:new Date().toISOString()},{onConflict:'round'});}
 async function pushHcp(player,hcp){if(!sb)return;await sb.from('omega_handicaps').upsert({player,hcp,updated_at:new Date().toISOString()},{onConflict:'player'});}
 async function pushHcpHistory(player,round,hcp){if(!sb)return;await sb.from('omega_hcp_history').upsert({player,round,hcp,updated_at:new Date().toISOString()},{onConflict:'player,round'});}
 async function pushLock(round,locked){if(!sb)return;await sb.from('omega_locks').upsert({round,locked,updated_at:new Date().toISOString()},{onConflict:'round'});}
+async function pushSideTeams(){if(!sb)return;await sb.from('omega_settings').upsert({key:'side_teams',value:JSON.stringify(SIDE_TEAMS),updated_at:new Date().toISOString()},{onConflict:'key'});}
 
 // Helpers
 function cHcp(name,ci){const c=COURSES[ci];if(c.noStrokes)return 0;const round=ci+1;const lockedHcp=(LOCKED_ROUNDS[round]&&HCP_HISTORY[name]&&HCP_HISTORY[name][round]!==undefined)?HCP_HISTORY[name][round]:HCP[name];return(lockedHcp*c.slope/113)+(c.rating-c.par);}
@@ -643,7 +647,7 @@ function renderMatchTabs(){
   const labels={1:'R1 · Stableford',2:'R2 · Best Ball',3:'R3 · Scramble',4:'R4 · Singles'};
   const row=document.getElementById('match-tabrow');
   if(!row)return;
-  row.innerHTML=[1,2,3,4].map(r=>`<button class="tbtn${curMatchRound===r?' active':''}" onclick="showTab(${r})">${labels[r]}${LOCKED_ROUNDS[r]?' 🔒':''}</button>`).join('');
+  row.innerHTML=[1,2,3,4].map(r=>`<button class="tbtn${curMatchRound===r?' active':''}" onclick="showTab(${r})">${labels[r]}${LOCKED_ROUNDS[r]?' 🔒':''}</button>`).join('')+`<button class="tbtn${curMatchRound==='side'?' active':''}" onclick="showTab('side')">💰 Side Match</button>`;
 }
 
 function showTab(r){
@@ -655,6 +659,7 @@ function showTab(r){
 // Render matches
 function renderMatches(){
   const r=curMatchRound,el=document.getElementById('mcontent');
+  if(r==='side'){el.innerHTML=renderSideMatch();return;}
   if(r===1){
     let h=`<div style="font-size:11px;color:var(--text-hint);font-family:'DM Mono',monospace;margin-bottom:.875rem;">4 matches · 1 pt each · 0.5 for tie · lowest delta wins</div>`;
     let r1bPts=0,r1cPts=0;
@@ -1089,7 +1094,7 @@ function checkPw(){
   if(document.getElementById('adminpw').value===PW){
     document.getElementById('adminlock').style.display='none';
     document.getElementById('adminpanel').style.display='block';
-    buildHcpEditor();[1,2,3,4].forEach(buildPairEd);buildClearDrop();
+    buildHcpEditor();[1,2,3,4].forEach(buildPairEd);buildClearDrop();buildSideTeamEditor();
   }else{
     document.getElementById('pwerr').style.display='block';
     document.getElementById('adminpw').value='';
@@ -1229,8 +1234,43 @@ async function saveHcps(){
   await Promise.all(updates);
   buildHcpEditor();
   [1,2,3,4].forEach(buildPairEd);
+  buildSideTeamEditor();
   refreshAll();
   const f=document.getElementById('hcpflash');f.style.display='block';setTimeout(()=>f.style.display='none',2500);
+}
+
+function buildSideTeamEditor(){
+  const allPlayers=[...BEETS,...COMMONS];
+  const el=document.getElementById('side-team-editor');
+  if(!el)return;
+  const tColors=['var(--amber)','var(--green-mid)','var(--blue)','var(--red)'];
+  el.innerHTML=SIDE_TEAMS.map((team,ti)=>{
+    const col=tColors[ti%tColors.length];
+    const opts=allPlayers.map(n=>`<option value="${n}"${team.players[0]===n?' selected':''}>${n}</option>`).join('');
+    const opts2=allPlayers.map(n=>`<option value="${n}"${team.players[1]===n?' selected':''}>${n}</option>`).join('');
+    return`<div style="margin-bottom:12px;padding:10px;background:var(--bg-secondary);border-radius:var(--radius);border:1px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <input class="heinp" type="text" id="sidename_${ti}" value="${team.name}" style="font-size:13px;font-weight:600;color:${col};font-family:'DM Sans',sans-serif;text-align:left;flex:1;">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div><label class="flabel">Player 1</label><select class="fsel" id="sidep1_${ti}" style="font-size:14px;padding:8px 10px;"><option value="">— Select —</option>${opts}</select></div>
+        <div><label class="flabel">Player 2</label><select class="fsel" id="sidep2_${ti}" style="font-size:14px;padding:8px 10px;"><option value="">— Select —</option>${opts2}</select></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function saveSideTeams(){
+  SIDE_TEAMS=SIDE_TEAMS.map((team,ti)=>({
+    name:document.getElementById('sidename_'+ti)?.value.trim()||team.name,
+    players:[
+      document.getElementById('sidep1_'+ti)?.value||'',
+      document.getElementById('sidep2_'+ti)?.value||''
+    ]
+  }));
+  await pushSideTeams();
+  refreshAll();
+  const f=document.getElementById('sideteamflash');f.style.display='block';setTimeout(()=>f.style.display='none',2500);
 }
 
 function buildClearDrop(){
@@ -1259,6 +1299,15 @@ function clearScores(){
   const pn=document.getElementById('clear-player').value;
   if(!pn){return;}
   const r=parseInt(document.getElementById('clear-round').value);
+  if(LOCKED_ROUNDS[r]){
+    document.getElementById('clear-confirm-msg').textContent='⛔ R'+r+' is signed and locked. Open the round first before clearing scores.';
+    document.getElementById('clear-confirm').style.display='block';
+    document.getElementById('clearflash').style.display='none';
+    // Hide the Yes button — just show Cancel
+    document.getElementById('btn-clear-yes').style.display='none';
+    return;
+  }
+  document.getElementById('btn-clear-yes').style.display='';
   const rNames=['R1 · Swampfire','R2 · Monarch','R3 · Reflections','R4 · Fountains'];
   clearAllMode=false;
   document.getElementById('clear-confirm-msg').textContent='Clear '+pn+"'s scores for "+rNames[r-1]+'? This cannot be undone.';
@@ -1268,6 +1317,14 @@ function clearScores(){
 
 function clearAll(){
   const r=parseInt(document.getElementById('clear-round').value);
+  if(LOCKED_ROUNDS[r]){
+    document.getElementById('clear-confirm-msg').textContent='⛔ R'+r+' is signed and locked. Open the round first before clearing scores.';
+    document.getElementById('clear-confirm').style.display='block';
+    document.getElementById('clearflash').style.display='none';
+    document.getElementById('btn-clear-yes').style.display='none';
+    return;
+  }
+  document.getElementById('btn-clear-yes').style.display='';
   const rNames=['R1 · Swampfire','R2 · Monarch','R3 · Reflections','R4 · Fountains'];
   clearAllMode=true;
   document.getElementById('clear-confirm-msg').textContent='Clear ALL players scores for '+rNames[r-1]+'? This cannot be undone.';
@@ -1283,18 +1340,30 @@ async function executeClear(){
     const groups=r3Groups();
     const r3keys=new Set(groups.flatMap(g=>[g.beetsKey,g.commonsKey]));
     for(const pn of allPlayers){
-      SCORES[pn]={};
-      if(sb)await sb.from('omega_scores').delete().eq('player',pn);
+      // Only clear scores for unlocked rounds
+      for(const r of [1,2,3,4]){
+        if(LOCKED_ROUNDS[r])continue;
+        if(SCORES[pn])delete SCORES[pn][r];
+        if(sb)await sb.from('omega_scores').delete().eq('player',pn).eq('round',r);
+      }
     }
     for(const key of r3keys){
-      SCORES[key]={};
-      if(sb)await sb.from('omega_scores').delete().eq('player',key);
+      if(LOCKED_ROUNDS[3])continue;
+      if(SCORES[key])delete SCORES[key][3];
+      if(sb)await sb.from('omega_scores').delete().eq('player',key).eq('round',3);
     }
     refreshAll();loadPlayerScores();
     const f=document.getElementById('clearflash');f.style.display='block';setTimeout(()=>f.style.display='none',2500);
     return;
   }
   const r=parseInt(document.getElementById('clear-round').value);
+  // Safety guard — abort if round became locked between confirm and execute
+  if(LOCKED_ROUNDS[r]){
+    const f=document.getElementById('clearflash');
+    f.style.display='block';f.style.color='var(--red)';f.textContent='⛔ Round is locked — no changes made.';
+    setTimeout(()=>{f.style.display='none';f.textContent='✓ Scores cleared.';},2500);
+    return;
+  }
   const allPlayers=clearAllMode?[...BEETS,...COMMONS]:[document.getElementById('clear-player').value];
   // For R3 scramble, resolve player names to their group keys
   const keysToDelete=new Set();
@@ -1322,7 +1391,10 @@ async function executeClear(){
 }
 
 async function clearEverything(){
-  document.getElementById('clear-confirm-msg').textContent='Clear ALL scores for ALL rounds? This cannot be undone.';
+  const lockedRounds=[1,2,3,4].filter(r=>LOCKED_ROUNDS[r]);
+  const lockedNote=lockedRounds.length?` Signed rounds (${lockedRounds.map(r=>'R'+r).join(', ')}) will be skipped.`:'';
+  document.getElementById('clear-confirm-msg').textContent='Clear ALL scores for ALL open rounds? This cannot be undone.'+lockedNote;
+  document.getElementById('btn-clear-yes').style.display='';
   clearAllMode=true;
   clearEverythingMode=true;
   document.getElementById('clear-confirm').style.display='block';
@@ -1433,6 +1505,190 @@ async function clearPair(round){
   if(curMatchRound===round)renderMatches();
   const f=document.getElementById('r'+round+'clrflash');
   if(f){f.style.display='block';setTimeout(()=>f.style.display='none',2500);}
+}
+
+function sideNetHalf(player, round){
+  // Returns {front: netFront, back: netBack} for a player in a given round
+  // Uses full individual course handicap (not relative) with hole-by-hole SI where available
+  const holes = getH(player, round);
+  const ch = Math.round(cHcp(player, round - 1));
+  let front, back;
+  if(SI[round]){
+    // Use hole-by-hole stroke index (R2, R4)
+    const strokeHoles = getStrokeHoles(ch, round);
+    front = holes.slice(0, 9).reduce((s, v, h) => s + (v ? v - strokeHoles[h] : 0), 0);
+    back  = holes.slice(9, 18).reduce((s, v, h) => s + (v ? v - strokeHoles[h + 9] : 0), 0);
+  } else {
+    // No SI (R1) — split course hcp evenly: front gets floor(ch/2), back gets the rest
+    const fStrokes = Math.floor(ch / 2);
+    const bStrokes = ch - fStrokes;
+    front = holes.slice(0, 9).reduce((s, v) => s + (v || 0), 0) - fStrokes;
+    back  = holes.slice(9, 18).reduce((s, v) => s + (v || 0), 0) - bStrokes;
+  }
+  const fPlayed = holes.slice(0, 9).filter(v => v > 0).length;
+  const bPlayed = holes.slice(9, 18).filter(v => v > 0).length;
+  return { front, back, fPlayed, bPlayed };
+}
+
+function sideTeamRound(team, round){
+  // Best front net + best back net for the team pair
+  const p1 = team.players[0], p2 = team.players[1];
+  if(!p1 || !p2) return null;
+  const s1 = sideNetHalf(p1, round), s2 = sideNetHalf(p2, round);
+  const fPlayed = Math.max(s1.fPlayed, s2.fPlayed);
+  const bPlayed = Math.max(s1.bPlayed, s2.bPlayed);
+  if(fPlayed === 0 && bPlayed === 0) return null;
+  const bestFront = fPlayed > 0 ? Math.min(s1.fPlayed > 0 ? s1.front : 999, s2.fPlayed > 0 ? s2.front : 999) : null;
+  const bestBack  = bPlayed > 0 ? Math.min(s1.bPlayed > 0 ? s1.back  : 999, s2.bPlayed > 0 ? s2.back  : 999) : null;
+  const bestFrontWinner = (bestFront !== null) ? (s1.fPlayed > 0 && s1.front <= (s2.fPlayed > 0 ? s2.front : 999) ? p1 : p2) : null;
+  const bestBackWinner  = (bestBack  !== null) ? (s1.bPlayed > 0 && s1.back  <= (s2.bPlayed > 0 ? s2.back  : 999) ? p1 : p2) : null;
+  const total = (bestFront || 0) + (bestBack || 0);
+  return { bestFront, bestBack, bestFrontWinner, bestBackWinner, total, fPlayed, bPlayed,
+    s1f: s1.fPlayed > 0 ? s1.front : null, s1b: s1.bPlayed > 0 ? s1.back : null,
+    s2f: s2.fPlayed > 0 ? s2.front : null, s2b: s2.bPlayed > 0 ? s2.back : null };
+}
+
+function renderSideMatch(){
+  const allPlayers = [...BEETS, ...COMMONS];
+  const SIDE_ROUNDS = [1, 2, 4];
+  const roundLabels = {1: 'R1 · Swampfire', 2: 'R2 · Monarch', 4: 'R4 · Fountains'};
+
+  // Check if any teams are configured
+  const configured = SIDE_TEAMS.filter(t => t.players[0] && t.players[1]);
+  if(!configured.length){
+    return `<div class="card"><div class="tbd">Set Side Match teams in Admin → Side Match Teams.</div></div>`;
+  }
+
+  // Compute cumulative totals for leaderboard
+  const teamTotals = SIDE_TEAMS.map(team => {
+    let cum = 0, hasAny = false;
+    SIDE_ROUNDS.forEach(r => {
+      const res = sideTeamRound(team, r);
+      if(res){ cum += res.total; hasAny = true; }
+    });
+    return { team, cum, hasAny };
+  }).filter(t => t.team.players[0] && t.team.players[1]);
+
+  const sorted = [...teamTotals].sort((a, b) => {
+    if(!a.hasAny && !b.hasAny) return 0;
+    if(!a.hasAny) return 1;
+    if(!b.hasAny) return -1;
+    return a.cum - b.cum;
+  });
+
+  // Team colors (amber, green, blue, red cycling)
+  const tColors = ['var(--amber)', 'var(--green-mid)', 'var(--blue)', 'var(--red)'];
+
+  // ── Leaderboard card ──────────────────────────────────────────────────────
+  let lb = `<div class="card" style="margin-bottom:.875rem;">
+    <div class="ctitle" style="margin-bottom:.75rem;">💰 Side Match Leaderboard</div>
+    <div style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;margin-bottom:.75rem;">Best front + back net · Lowest cumulative score wins</div>`;
+
+  const leader = sorted.find(e => e.hasAny);
+  sorted.forEach((entry, rank) => {
+    const {team, cum, hasAny} = entry;
+    const tIdx = SIDE_TEAMS.indexOf(team);
+    const col = tColors[tIdx % tColors.length];
+    const p1 = team.players[0], p2 = team.players[1];
+    const medal = rank === 0 && hasAny ? '🏆 ' : '';
+    const delta = (rank > 0 && hasAny && leader) ? `+${cum - leader.cum}` : null;
+    lb += `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="font-size:18px;font-weight:700;color:${col};min-width:24px;font-family:'DM Mono',monospace;">${rank+1}</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:${col};">${medal}${team.name}</div>
+          <div style="font-size:11px;color:var(--text-secondary);font-family:'DM Mono',monospace;margin-top:1px;">${p1} / ${p2}</div>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:22px;font-weight:700;color:${col};font-family:'DM Mono',monospace;">${hasAny ? cum : '–'}</div>
+        <div style="font-size:9px;font-family:'DM Mono',monospace;margin-top:1px;">
+          ${delta ? `<span style="color:var(--red);font-weight:600;">${delta}</span>` : `<span style="color:var(--text-hint);">net total</span>`}
+        </div>
+      </div>
+    </div>`;
+  });
+  lb += `</div>`;
+
+  // ── Per-team round breakdown cards ────────────────────────────────────────
+  let cards = '';
+  SIDE_TEAMS.forEach((team, tIdx) => {
+    if(!team.players[0] || !team.players[1]) return;
+    const col = tColors[tIdx % tColors.length];
+    const p1 = team.players[0], p2 = team.players[1];
+    const ch1f = Math.round(cHcp(p1, 0)), ch1b = Math.round(cHcp(p1, 1)), ch1r4 = Math.round(cHcp(p1, 3));
+    const ch2f = Math.round(cHcp(p2, 0)), ch2b = Math.round(cHcp(p2, 1)), ch2r4 = Math.round(cHcp(p2, 3));
+
+    let roundRows = '';
+    let cumTotal = 0, anyRound = false;
+
+    SIDE_ROUNDS.forEach(r => {
+      const ci = r === 1 ? 0 : r === 2 ? 1 : 3;
+      const res = sideTeamRound(team, r);
+      const s1 = sideNetHalf(p1, r), s2 = sideNetHalf(p2, r);
+      const ch_p1 = Math.round(cHcp(p1, ci)), ch_p2 = Math.round(cHcp(p2, ci));
+      const hasData = res !== null;
+      if(hasData){ cumTotal += res.total; anyRound = true; }
+
+      const fWin = res ? res.bestFrontWinner : null;
+      const bWin = res ? res.bestBackWinner : null;
+
+      const fCell = (val, player) => {
+        if(val === null) return '<span style="color:var(--text-hint);">–</span>';
+        const isWinner = player === fWin;
+        return `<span style="font-weight:${isWinner?'700':'400'};color:${isWinner?col:'var(--text-secondary)'};">${val}</span>`;
+      };
+      const bCell = (val, player) => {
+        if(val === null) return '<span style="color:var(--text-hint);">–</span>';
+        const isWinner = player === bWin;
+        return `<span style="font-weight:${isWinner?'700':'400'};color:${isWinner?col:'var(--text-secondary)'};">${val}</span>`;
+      };
+
+      roundRows += `
+        <div style="border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;">
+          <div style="background:var(--bg-secondary);padding:7px 12px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:11px;font-family:'DM Mono',monospace;font-weight:600;color:var(--text);">${roundLabels[r]}</span>
+            <span style="font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:${hasData?col:'var(--text-hint)'};">${hasData ? res.total : '–'}</span>
+          </div>
+          <div style="padding:8px 12px;">
+            <div style="display:grid;grid-template-columns:1fr 60px 60px;gap:4px;font-size:10px;font-family:'DM Mono',monospace;margin-bottom:4px;">
+              <div style="color:var(--text-hint);text-transform:uppercase;letter-spacing:.04em;">Player</div>
+              <div style="text-align:center;color:var(--text-hint);text-transform:uppercase;letter-spacing:.04em;">Front</div>
+              <div style="text-align:center;color:var(--text-hint);text-transform:uppercase;letter-spacing:.04em;">Back</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 60px 60px;gap:4px;align-items:center;padding:4px 0;border-top:1px solid var(--border);">
+              <div style="font-size:12px;font-weight:500;">${p1} <span style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;">${ch_p1}str</span></div>
+              <div style="text-align:center;font-size:13px;font-family:'DM Mono',monospace;">${fCell(s1.fPlayed>0?s1.front:null, p1)}</div>
+              <div style="text-align:center;font-size:13px;font-family:'DM Mono',monospace;">${bCell(s1.bPlayed>0?s1.back:null, p1)}</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 60px 60px;gap:4px;align-items:center;padding:4px 0;border-top:1px solid var(--border);">
+              <div style="font-size:12px;font-weight:500;">${p2} <span style="font-size:10px;color:var(--text-hint);font-family:'DM Mono',monospace;">${ch_p2}str</span></div>
+              <div style="text-align:center;font-size:13px;font-family:'DM Mono',monospace;">${fCell(s2.fPlayed>0?s2.front:null, p2)}</div>
+              <div style="text-align:center;font-size:13px;font-family:'DM Mono',monospace;">${bCell(s2.bPlayed>0?s2.back:null, p2)}</div>
+            </div>
+            ${hasData ? `<div style="display:grid;grid-template-columns:1fr 60px 60px;gap:4px;padding:5px 0 2px;border-top:1px solid var(--border);margin-top:2px;">
+              <div style="font-size:10px;font-family:'DM Mono',monospace;color:${col};font-weight:700;text-transform:uppercase;">Best</div>
+              <div style="text-align:center;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:${col};">${res.bestFront !== null ? res.bestFront : '–'}</div>
+              <div style="text-align:center;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:${col};">${res.bestBack !== null ? res.bestBack : '–'}</div>
+            </div>` : ''}
+          </div>
+        </div>`;
+    });
+
+    cards += `<div class="mc" style="margin-bottom:.875rem;">
+      <div class="mch" style="cursor:default;">
+        <span class="mct" style="color:${col};font-weight:700;">${team.name}</span>
+        <span class="mcs" style="color:${col};">${anyRound ? cumTotal + ' net' : 'No scores'}</span>
+        <span></span>
+      </div>
+      <div class="mcb" style="padding:.875rem 1rem;">
+        <div style="font-size:11px;color:var(--text-secondary);font-family:'DM Mono',monospace;margin-bottom:.75rem;">${p1} / ${p2}</div>
+        ${roundRows}
+      </div>
+    </div>`;
+  });
+
+  return lb + cards;
 }
 
 function refreshAll(){updatePinDisplay();renderDashboard();renderMatchTabs();renderMatches();renderSched();renderPlayers();buildPlayerDrop();buildClearDrop();updateScoreLockState();updateSignStatus();updateDashLockBadges();}
@@ -1886,6 +2142,7 @@ document.addEventListener('DOMContentLoaded',function(){
   document.getElementById('btn-clrpair3').addEventListener('click',function(){clearPair(3);});
   document.getElementById('btn-clrpair4').addEventListener('click',function(){clearPair(4);});
   document.getElementById('btn-hcp').addEventListener('click',saveHcps);
+  document.getElementById('btn-side-teams').addEventListener('click',saveSideTeams);
   document.getElementById('clear-round').addEventListener('change',buildClearDrop);
   document.getElementById('btn-clear-scores').addEventListener('click',function(){
     if(!document.getElementById('clear-player').value){document.getElementById('clear-confirm').style.display='none';document.getElementById('clearflash').style.display='none';return;}
@@ -1945,7 +2202,7 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 
 // Countdown
-let COUNTDOWN_TARGET = new Date('2026-06-12T13:00:00');
+let COUNTDOWN_TARGET = new Date(2026,5,12,13,0,0);// June 12 2026 1pm local
 let countdownInterval = null;
 
 function startCountdown(){
@@ -1998,8 +2255,12 @@ async function saveCountdown(){
   const dateVal=document.getElementById('cd-date-input')?.value;
   const timeVal=document.getElementById('cd-time-input')?.value||'13:00';
   if(!dateVal)return;
-  COUNTDOWN_TARGET=new Date(`${dateVal}T${timeVal}:00`);
-  if(sb)await sb.from('omega_settings').upsert({key:'countdown_target',value:`${dateVal}T${timeVal}:00`,updated_at:new Date().toISOString()},{onConflict:'key'});
+  // Build date in local time explicitly to avoid UTC misinterpretation
+  const [y,mo,d]=dateVal.split('-').map(Number);
+  const [h,min]=(timeVal||'13:00').split(':').map(Number);
+  COUNTDOWN_TARGET=new Date(y,mo-1,d,h,min,0);
+  const isoLocal=`${dateVal}T${timeVal}:00`;
+  if(sb)await sb.from('omega_settings').upsert({key:'countdown_target',value:isoLocal,updated_at:new Date().toISOString()},{onConflict:'key'});
   startCountdown();
   const f=document.getElementById('cdflash');f.style.display='block';setTimeout(()=>f.style.display='none',2500);
 }
