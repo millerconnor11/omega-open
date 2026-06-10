@@ -1844,7 +1844,15 @@ function renderDashboard(){
       const ri=i+1;
       const hasData=r.b>0||r.c>0;
       const locked=LOCKED_ROUNDS[ri];
-      const hasAnyScore=Object.values(SCORES).some(s=>s[ri]&&s[ri].some(v=>v>0));
+      let hasAnyScore;
+      if(ri===3){
+        // R3 scramble scores are stored under group keys, not player names
+        const groups=r3Groups();
+        const r3keys=[...groups.map(g=>g.beetsKey),...groups.map(g=>g.commonsKey)];
+        hasAnyScore=r3keys.some(k=>SCORES[k]&&SCORES[k][3]&&SCORES[k][3].some(v=>v>0));
+      } else {
+        hasAnyScore=Object.values(SCORES).some(s=>s[ri]&&s[ri].some(v=>v>0));
+      }
       const badge=locked?'<span class="badge bgr">🔒 Locked</span>':hasAnyScore?'<span class="badge bg">🔴 Live</span>':'<span class="badge bgr">Soon</span>';
       const fmt=v=>v===Math.floor(v)?v:v.toFixed(1);
       return`<div class="rrow"><div class="rinfo"><div class="rname">${rNames[i]}</div><div class="rsub">${rSubs[i]}</div></div><div class="rscores"><div class="rscore sg">${hasData?fmt(r.b):'–'}</div><div style="font-size:10px;color:var(--text-hint);">vs</div><div class="rscore sb">${hasData?fmt(r.c):'–'}</div>${badge}</div></div>`;
@@ -2230,25 +2238,15 @@ function tickCountdown(){
   const totalSecs=Math.floor(diff/1000);
   const secs=totalSecs%60;
   const totalMins=Math.floor(totalSecs/60);
-  const hours=Math.floor(totalMins/60)%24;
-  const totalHours=Math.floor(totalSecs/3600);
+  const mins=totalMins%60;
+  const totalHours=Math.floor(totalMins/60);
+  const hours=totalHours%24;
   const totalDays=Math.floor(totalHours/24);
   const months=Math.floor(totalDays/30.44);
-  const days=totalDays%Math.round(months*30.44||1)%31;
-  // Simpler: just show total days broken into months+days
-  const now2=new Date(now);
-  let m=0,d=0;
-  const target=new Date(COUNTDOWN_TARGET);
-  let y1=now2.getFullYear(),mo1=now2.getMonth(),d1=now2.getDate();
-  let y2=target.getFullYear(),mo2=target.getMonth(),d2=target.getDate();
-  m=(y2-y1)*12+(mo2-mo1);
-  d=d2-d1;
-  if(d<0){m--;const prev=new Date(y2,mo2,0);d+=prev.getDate();}
-  if(m<0){m=0;d=Math.max(0,Math.floor((COUNTDOWN_TARGET-now)/86400000));}
+  const days=totalDays-Math.floor(months*30.44);
   const el=id=>document.getElementById(id);
-  const mins=Math.floor(totalMins%60);
-  if(el('cd-months'))el('cd-months').textContent=m;
-  if(el('cd-days'))el('cd-days').textContent=d;
+  if(el('cd-months'))el('cd-months').textContent=months;
+  if(el('cd-days'))el('cd-days').textContent=days;
   if(el('cd-hours'))el('cd-hours').textContent=String(hours).padStart(2,'0');
   if(el('cd-mins'))el('cd-mins').textContent=String(mins).padStart(2,'0');
   if(el('cd-secs'))el('cd-secs').textContent=String(secs).padStart(2,'0');
