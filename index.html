@@ -503,13 +503,14 @@ async function loadAll(){
   if(hc)hc.forEach(r=>{HCP[r.player]=r.hcp;});
   if(lk)lk.forEach(r=>{LOCKED_ROUNDS[r.round]=r.locked;});
   if(hh)hh.forEach(r=>{if(!HCP_HISTORY[r.player])HCP_HISTORY[r.player]={};HCP_HISTORY[r.player][r.round]=r.hcp;});
-  if(st){const sp=st.find(r=>r.key==='scores_pin');if(sp)SCORES_PIN=sp.value;const stt=st.find(r=>r.key==='side_teams');if(stt){try{SIDE_TEAMS=JSON.parse(stt.value);}catch(e){}}
+  if(st){const sp=st.find(r=>r.key==='scores_pin');if(sp)SCORES_PIN=sp.value;const pl=st.find(r=>r.key==='player_lists');if(pl){try{const lists=JSON.parse(pl.value);if(lists.beets&&lists.beets.length===8){BEETS.splice(0,8,...lists.beets);}if(lists.commons&&lists.commons.length===8){COMMONS.splice(0,8,...lists.commons);}}catch(e){}}const stt=st.find(r=>r.key==='side_teams');if(stt){try{SIDE_TEAMS=JSON.parse(stt.value);}catch(e){}}
   const cd=st.find(r=>r.key==='countdown_target');if(cd){const parts=cd.value.split('T');if(parts.length===2){const [cy,cmo,cdd]=parts[0].split('-').map(Number);const [ch,cmin]=parts[1].substring(0,5).split(':').map(Number);COUNTDOWN_TARGET=new Date(cy,cmo-1,cdd,ch,cmin,0);const di=document.getElementById('cd-date-input');const ti=document.getElementById('cd-time-input');if(di)di.value=parts[0];if(ti)ti.value=parts[1].substring(0,5);}}}
   refreshAll();
+  startCountdown();
 }
 function subscribe(){
   if(!sb)return;
-  sb.channel('omega').on('postgres_changes',{event:'*',schema:'public',table:'omega_locks'},p=>{const r=p.new;if(r){LOCKED_ROUNDS[r.round]=r.locked;refreshAll();}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_scores'},p=>{const r=p.new;if(r){if(!SCORES[r.player])SCORES[r.player]={};SCORES[r.player][r.round]=r.holes;refreshAll();}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_pairings'},p=>{const r=p.new;if(r){PAIRINGS[r.round]=r.data;refreshAll();}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_handicaps'},p=>{const r=p.new;if(r){HCP[r.player]=r.hcp;refreshAll();}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_settings'},p=>{const r=p.new;if(r&&r.key==='side_teams'){try{SIDE_TEAMS=JSON.parse(r.value);refreshAll();}catch(e){}}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_hcp_history'},p=>{const r=p.new;if(r){if(!HCP_HISTORY[r.player])HCP_HISTORY[r.player]={};HCP_HISTORY[r.player][r.round]=r.hcp;refreshAll();}}).subscribe();
+  sb.channel('omega').on('postgres_changes',{event:'*',schema:'public',table:'omega_locks'},p=>{const r=p.new;if(r){LOCKED_ROUNDS[r.round]=r.locked;refreshAll();}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_scores'},p=>{const r=p.new;if(r){if(!SCORES[r.player])SCORES[r.player]={};SCORES[r.player][r.round]=r.holes;refreshAll();}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_pairings'},p=>{const r=p.new;if(r){PAIRINGS[r.round]=r.data;refreshAll();}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_handicaps'},p=>{const r=p.new;if(r){HCP[r.player]=r.hcp;refreshAll();}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_settings'},p=>{const r=p.new;if(r&&r.key==='side_teams'){try{SIDE_TEAMS=JSON.parse(r.value);refreshAll();}catch(e){}}if(r&&r.key==='player_lists'){try{const lists=JSON.parse(r.value);if(lists.beets&&lists.beets.length===8){BEETS.splice(0,8,...lists.beets);}if(lists.commons&&lists.commons.length===8){COMMONS.splice(0,8,...lists.commons);}refreshAll();}catch(e){}}}).on('postgres_changes',{event:'*',schema:'public',table:'omega_hcp_history'},p=>{const r=p.new;if(r){if(!HCP_HISTORY[r.player])HCP_HISTORY[r.player]={};HCP_HISTORY[r.player][r.round]=r.hcp;refreshAll();}}).subscribe();
 }
 async function pushScore(p,round,holes){if(!sb)return;await sb.from('omega_scores').upsert({player:p,round,holes,updated_at:new Date().toISOString()},{onConflict:'player,round'});}
 async function pushPairings(round,data){if(!sb)return;await sb.from('omega_pairings').upsert({round,data,updated_at:new Date().toISOString()},{onConflict:'round'});}
@@ -1187,31 +1188,33 @@ async function renamePlayer(oldName, newName){
   if(SCORES[oldName]!==undefined){SCORES[newName]=SCORES[oldName];delete SCORES[oldName];}
   // Migrate HCP_HISTORY
   if(HCP_HISTORY[oldName]!==undefined){HCP_HISTORY[newName]=HCP_HISTORY[oldName];delete HCP_HISTORY[oldName];}
+  // Migrate SIDE_TEAMS references
+  SIDE_TEAMS.forEach(t=>{t.players=t.players.map(p=>p===oldName?newName:p);});
   // Migrate PAIRINGS references
   [1,2,3,4].forEach(r=>{
     (PAIRINGS[r]||[]).forEach(p=>{
-      // R1/R2/R3 format: {beets:[],commons:[]}
       if(p.beets&&Array.isArray(p.beets))p.beets=p.beets.map(n=>n===oldName?newName:n);
       if(p.commons&&Array.isArray(p.commons))p.commons=p.commons.map(n=>n===oldName?newName:n);
-      // R4 format: {matches:[{beets,commons}]}
       if(p.matches)p.matches.forEach(m=>{
         if(m.beets===oldName)m.beets=newName;
         if(m.commons===oldName)m.commons=newName;
       });
-      // R1 format: direct string names
       if(p.beets===oldName)p.beets=newName;
       if(p.commons===oldName)p.commons=newName;
     });
   });
-  // Update Supabase — rename in all tables
+  // Update Supabase — rename in all tables + persist updated player lists
   if(sb){
     await sb.from('omega_handicaps').update({player:newName}).eq('player',oldName);
     await sb.from('omega_scores').update({player:newName}).eq('player',oldName);
     await sb.from('omega_hcp_history').update({player:newName}).eq('player',oldName);
-    // Re-push pairings so they reflect new name
     for(const r of [1,2,3,4]){
       if((PAIRINGS[r]||[]).length)await pushPairings(r,PAIRINGS[r]);
     }
+    // Persist the updated BEETS/COMMONS arrays so they survive reload
+    await sb.from('omega_settings').upsert({key:'player_lists',value:JSON.stringify({beets:BEETS,commons:COMMONS}),updated_at:new Date().toISOString()},{onConflict:'key'});
+    // Also persist side teams with updated names
+    await pushSideTeams();
   }
 }
 
